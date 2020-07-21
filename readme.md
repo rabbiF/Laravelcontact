@@ -1,3 +1,10 @@
+## Laravel Contact
+
+Application fait pour gérer les clients des agences immobilières. Elle peut être modifié pour d'autres projets.
+Elle est faite sous Laravel 5.6 et s'inspire du cours suivant : https://www.udemy.com/course/laravel-56-application-web-de-gestion-de-contacts/
+Elle possède en plus des fonctions d'exports et un back-office.
+
+
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
 <p align="center">
