@@ -19,16 +19,16 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-3">                          
-                            <input id="name" placeholder="Nom *" type="text" class="form-control" name="name">                         
+                            <input id="name" placeholder="Nom *" type="text" class="form-control" name="name" required>                         
                         </div>
                         <div class="form-group col-md-3">                          
-                            <input id="firstname" placeholder="Prénom *" type="text" class="form-control" name="firstname">                         
+                            <input id="firstname" placeholder="Prénom *" type="text" class="form-control" name="firstname" required>                         
                         </div>
                         <div class="form-group col-md-6">
-                            <input id="email" placeholder="Email *" type="text" class="form-control" name="email">
+                            <input id="email" placeholder="Email *" type="text" class="form-control" name="email" required>
                         </div>
                         <div class="form-group col-md2 col-lg-4">
-                            <input id="tel" placeholder="N° Téléphone" type="text" class="form-control" name="phone">
+                            <input id="tel" placeholder="N° Téléphone *" type="text" class="form-control" name="phone">
                         </div>
                         <div class="form-group col-md-4">
                             <input id="contact_origine" placeholder="Origine Contact" type="text" class="form-control" name="contact_origine">

@@ -25,7 +25,6 @@
                             <em>* Recherche par email, tél., bien, nom, prénom</em>
                         </div>
                     </div>
-                    @foreach ($result as $c)
                     <table id="accordionExample" class="table table-bordered">
                         <thead class="thead-light">        
                             <th>Tél.</th>
@@ -33,7 +32,8 @@
                             <th>Bien</th>
                             <th colspan="3" class="text-center">Actions</th>
                         </thead>
-                        <tbody>                            
+                        <tbody>
+                        @foreach ($result as $c)                          
                             <tr>            
                                 <td id="heading{{ $c->id }}">  
                                     <button class="btn btn-link collapsed  py-0" type="button" data-toggle="collapse" data-target="#collapseExample{{ $c->id }}" aria-expanded="false" aria-controls="collapseExample{{ $c->id }}">
@@ -114,9 +114,9 @@
                                     <a id="supprimer" class="btn btn-danger btn-sm" href="{{ route('client.delete', ['client' => $c->id]) }}">supprimer</a>
                                 </td>
                             </tr>
+                            @endforeach 
                         </tbody>
-                    </table> 
-                    @endforeach 
+                    </table>                   
 
                     <a href="/home" class="btn btn-primary btn-sm">Retour</a>                     
                 </div>
