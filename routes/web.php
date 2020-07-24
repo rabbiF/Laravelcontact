@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function() {
 
     Route::get('/search', 'ClientController@search')->name('client.search');
 
-    Route::get('/tasks', 'ClientController@download');    
+    Route::get('/tasks', 'ClientController@download')->name('client.download');
 
     Route::get('/admin', [
         'uses' => 'AdminController@index',
