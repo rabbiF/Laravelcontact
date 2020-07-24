@@ -21,12 +21,36 @@
                                     </button>
                                 </div>
                             </form>
-                            <em>* Recherche par email, tél., bien, nom, prénom</em>
+
+                            <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
+                                <div class="form-group mb-0">                                    
+                                    <select class="selectpicker" multiple title="Rechercher par bien..." name="bien" required>
+                                        <option value="T1">T1</option>
+                                        <option value="T2">T2</option>
+                                        <option value="T3">T3</option>
+                                        <option value="T4">T4</option>
+                                        <option value="T5">T5</option>
+                                        <option value="Villas">Villas</option>
+                                        <option value="Terrain">Terrain</option>
+                                        <option value="Locaux Commmerciaux">Locaux Commmerciaux</option>
+                                        <option value="Bureaux">Bureaux</option>
+                                        <option value="Maison">Maison</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <button class="btn btn-success" type="submit">
+                                        Rechercher
+                                    </button>
+                                </div>
+                            </form>
+                            <em>* Recherche par email, tél., nom, prénom</em>
                         </div>
 
                         <div class="pr-0 pl-0 pb-2 pb-xl-0 col-md-12 col-lg-6 col-xl-6 text-lg-right text-left">
                             <div>
-                                <span><a href="{{ url('/tasks') }}" class="btn btn-success">Export Clients</a></span>
+                            <span><a href="{{ route('client.download', 'tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
+                            <span><a href="{{ route('client.download', 'mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addClient" data-whatever="@getbootstrap">
                                     Nouveau
                                 </button>
@@ -41,4 +65,9 @@
     </div>
 </div>
 @include('clients.add')
-@endsection 
+@endsection
+@section('script')
+$(function () {
+    $('select').selectpicker();
+});
+@endsection
