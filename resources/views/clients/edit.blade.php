@@ -21,7 +21,7 @@
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="firstname">Prénom</label>                            
-                                <input id="firstname" value="{{ $client->firstname }}" type="text" class="form-control" name="name">                         
+                                <input id="firstname" value="{{ $client->firstname }}" type="text" class="form-control" name="firstname">                         
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="email">Email</label>
@@ -306,16 +306,9 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
-<script>
-$(document).ready(function () {
-  $('#date_contact').datetimepicker({
-    format: 'DD/MM/YYYY',
-    locale: 'fr'
-  });
+@endsection
+@section('script')
+$(function () {
+    $('select').selectpicker();
 });
-</script>
-
 @endsection

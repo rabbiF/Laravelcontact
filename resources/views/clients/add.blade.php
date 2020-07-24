@@ -10,8 +10,8 @@
             <div class="modal-body">
                 <form method="POST" action="{{ route('clients') }}">
                     @csrf
-                    <div class="form-group row col-md-9 col-lg-9">
-                        <label for="date_contact" class="col-4 col-sm-5 col-md-6 col-lg-6 col-form-label px-0">Date de contact <span class="text-danger">*</span></label> 
+                    <div class="form-group row col-md-9 col-lg-10">
+                        <label for="date_contact" class="col-4 col-sm-5 col-md-6 col-lg-4 col-form-label px-0">Date de contact <span class="text-danger">*</span></label> 
                         <div class="col-6 col-sm-6 col-md-6">
                             <input id="date_contact" type="date" name="date_contact" class="form-control">
                         </div>
