@@ -144,16 +144,31 @@ class ClientController extends Controller
 
     public function search(Request $request)
     {
-        $search = $request->get('q');
-        $result =  Auth::user()->clients()
-            ->where('clients.email', 'like', '%'.$search.'%')
-            ->orWhere('clients.phone', 'like', '%'.$search.'%')
-            ->orWhere('clients.type_de_bien', 'like', '%'.$search.'%')
-            ->orWhere('clients.name', 'like', '%'.$search.'%')
-            ->orWhere('clients.firstname', 'like', '%'.$search.'%')
-            ->paginate(10);   
+        $search = $request->query('bien');
 
-        return view('result', compact('search', 'result'));
+        if(isset($search)){
+            $search = $request->fullUrl();
+            $search= explode('bien=', $search);
+            unset($search[0]);
+            $search = array_values($search);
+            $search = str_replace("&", "", $search);
+
+            $result =  Auth::user()->clients()
+                ->whereIn('clients.type_de_bien', $search)
+                ->paginate(10);
+        }else{
+            $search = $request->query('q');          
+
+            $result =  Auth::user()->clients()
+                ->where('clients.email', 'like', '%'.$search.'%')
+                ->orWhere('clients.phone', 'like', '%'.$search.'%')
+                ->orWhere('clients.type_de_bien', 'like', '%'.$search.'%')
+                ->orWhere('clients.name', 'like', '%'.$search.'%')
+                ->orWhere('clients.firstname', 'like', '%'.$search.'%')
+                ->paginate(10);
+        }
+
+        return view('result', compact('search', 'result'));                 
     }
 
     public function download(Request $request)
@@ -166,12 +181,65 @@ class ClientController extends Controller
             ,   'Pragma'              => 'public'
         ];
 
-        $search = $request->get('q');
+        $searchTel = $request->query('tel_search');
+        $searchMail = $request->query('mail_search');
+        $searchBien = $request->query('bien');
+        $searchUrl =  $request->fullUrl();
 
-        $list =  Auth::user()->clients()
-            ->select('email','phone','name','firstname','type_de_bien')
+        if(isset($searchTel)){
+            $list = Auth::user()->clients()
+            ->select('phone')
+            ->where('clients.email', 'like', '%'.$searchTel.'%')
+            ->orWhere('clients.phone', 'like', '%'.$searchTel.'%')
+            ->orWhere('clients.type_de_bien', 'like', '%'.$searchTel.'%')
+            ->orWhere('clients.name', 'like', '%'.$searchTel.'%')
+            ->orWhere('clients.firstname', 'like', '%'.$searchTel.'%')
             ->get()
             ->toArray();
+        }
+
+        if(isset($searchMail)){
+            $list = Auth::user()->clients()
+            ->select('email')
+            ->where('clients.email', 'like', '%'.$searchMail.'%')
+            ->orWhere('clients.phone', 'like', '%'.$searchMail.'%')
+            ->orWhere('clients.type_de_bien', 'like', '%'.$searchMail.'%')
+            ->orWhere('clients.name', 'like', '%'.$searchMail.'%')
+            ->orWhere('clients.firstname', 'like', '%'.$searchMail.'%')
+            ->get()
+            ->toArray();
+        }        
+
+        if(empty($list)){
+            if(isset($searchBien)){
+
+                # formatage Get bien
+                $searchBien = $searchUrl;
+                $searchBien = explode('bien', $searchBien);
+                unset($searchBien[0]);                
+                $searchBien = array_values($searchBien);
+                $searchArray = ["&tel_search=","&mail_search=","="];
+                $replaceArray = [""];
+                $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
+                
+                # if clic btn export tel.
+                if(strpos($searchUrl, "tel_search")){
+                    $list = Auth::user()->clients()
+                        ->select('phone')  
+                        ->whereIn('clients.type_de_bien', $searchBien)
+                        ->get()
+                        ->toArray();                        
+                }
+                # if clic btn export mail.
+                if(strpos($searchUrl, "mail_search")){
+                    $list = Auth::user()->clients()
+                    ->select('email')
+                    ->whereIn('clients.type_de_bien', $searchBien) 
+                    ->get()
+                    ->toArray();                   
+                }
+            }                        
+        }      
 
         # add headers for each column in the CSV download
         array_unshift($list, array_keys($list[0]));
@@ -185,6 +253,6 @@ class ClientController extends Controller
             fclose($FH);
         };
 
-        return Response::stream($callback, 200, $headers);
+        return Response::stream($callback, 200, $headers);        
     }
 }
