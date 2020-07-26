@@ -23,4 +23,25 @@
     </div>
 </div>
 @include('admin.add')
-@endsection 
+@endsection
+@section('script')
+$(function () {    
+    $('a#supprimer').confirm({
+        title: 'Confirmation',
+        content: 'Voulez-vous vraiment supprimer?', 
+        buttons: { 
+            Oui: {
+                btnClass: 'btn btn-danger btn-sm',
+                action: function(){ 
+                location.href = this.$target.attr('href'); 
+            }},
+            Non:{ 
+                btnClass: 'btn btn-default',
+                action: function(){
+                    $.alert('Annulation');
+                }
+            }
+        } 
+    });
+});
+@endsection
