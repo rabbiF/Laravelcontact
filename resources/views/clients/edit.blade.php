@@ -56,7 +56,7 @@
                                         break;
                                     }
                                 ?>
-                                <select class="mdb-select md-form form-control" id="projet" name="projet">
+                                <select class="mdb-select md-form form-control" id="projet" name="projet" title="Projet">
                                     <option value="" disabled>Projet</option>
                                     <option value="{{ $client->projet }}" selected>{{ $client->projet }}</option>
                                     <?php echo $option1; ?>                            
@@ -190,9 +190,8 @@
                                     }
                                 ?>
 
-                                <select class="mdb-select md-form form-control" id="type_de_bien" name="type_de_bien">
-                                    <option value="" disabled>Type de Bien</option>
-                                    <option value="{{ $client->type_de_bien }}">{{ $client->type_de_bien }}</option>
+                                <select class="mdb-select md-form form-control" id="type_de_bien" name="type_de_bien[]" multiple title="type_de_bien">
+                                    <option value="{{ $client->type_de_bien }}" selected>{{ $client->type_de_bien }}</option>
                                     <?php echo $option2; ?>
                                 </select> 
                             </div>                                  
@@ -219,69 +218,90 @@
                                     }
                                 ?>
 
-                                <select class="mdb-select md-form form-control" id="etat" name="etat">
-                                    <option value="" disabled>Etat</option>
-                                    <option value="{{ $client->etat }}">{{ $client->etat }}</option>
+                                <select class="mdb-select md-form form-control" id="etat" name="etat" title="Etat">
+                                    <option value="{{ $client->etat }}" selected>{{ $client->etat }}</option>
                                     <?php echo $option3; ?>                                    
                                 </select>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="typologie">Typologie</label>
-                                <input id="typologie" value="{{ $client->typologie }}" type="text" class="form-control" name="typologie">
-                            </div>
+                            </div>                            
                             <div class="form-group col-md-3">
                                 <label for="secteur">Secteur</label>
+                                <?php
+                                    $option4="<option value='Tel'>Tel</option>
+                                    <option value='Sms'>Sms</option>
+                                    <option value='Mail'>Mail</option>
+                                    <option value='Direct'>Direct</option>";
+                                    switch ($client->contact){
+                                        case "Tel":
+                                            $option4="<option value='Sms'>Sms</option>
+                                            <option value='Mail'>Mail</option>
+                                            <option value='Direct'>Direct</option>";
+                                        break;
+                                        case "Sms":
+                                            $option4="<option value='Tel'>Tel</option>                                            
+                                            <option value='Mail'>Mail</option>
+                                            <option value='Direct'>Direct</option>";
+                                        break;
+                                        case "Mail":
+                                            $option4="<option value='Tel'>Tel</option>
+                                            <option value='Sms'>Sms</option>                                            
+                                            <option value='Direct'>Direct</option>";
+                                        break;
+                                        case "Direct":
+                                            $option4="<option value='Tel'>Tel</option>
+                                            <option value='Sms'>Sms</option>
+                                            <option value='Mail'>Mail</option>";
+                                        break;
+                                    }
+                                ?> 
                                 <input id="secteur" value="{{ $client->secteur }}" type="text" class="form-control" name="secteur">
                             </div>                            
                             <div class="form-group col-md-3">
                                 <label for="contact">Prise de contact</label>
-                                <input id="contact" value="{{ $client->contact }}" type="text" class="form-control" name="contact">
+                                <select class="mdb-select md-form form-control" id="contact" name="contact" title="Prise de contact">
+                                    <option value="{{ $client->contact }}" selected>{{ $client->contact }}</option>
+                                    <?php echo $option4; ?>                                    
+                                </select>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="suivi">Suivi</label>
                                 <?php
-                                    $option4="<option value='A rappeler'>A rappeler</option>
+                                    $option5="<option value='A rappeler'>A rappeler</option>
                                     <option value='A relancer'>A relancer</option>
                                     <option value='Contrat/compromis signé'>Contrat/compromis signé</option>
                                     <option value='Acte signé'>Acte signé</option>";
                                     switch ($client->suivi){
                                         case "A rappeler":
-                                            $option4="<option value='A relancer'>A relancer</option>
+                                            $option5="<option value='A relancer'>A relancer</option>
                                             <option value='Contrat/compromis signé'>Contrat/compromis signé</option>
                                             <option value='Acte signé'>Acte signé</option>";
                                         break;
                                         case "A relancer":
-                                            $option4="<option value='A rappeler'>A rappeler</option>
+                                            $option5="<option value='A rappeler'>A rappeler</option>
                                             <option value='Contrat/compromis signé'>Contrat/compromis signé</option>
                                             <option value='Acte signé'>Acte signé</option>";
                                         break;
                                         case "Contrat/compromis signé":
-                                            $option4="<option value='A relancer'>A relancer</option>
+                                            $option5="<option value='A relancer'>A relancer</option>
                                             <option value='A rappeler'>A rappeler</option>
                                             <option value='Acte signé'>Acte signé</option>";
                                         break;
                                         case "Acte signé":
-                                            $option4="<option value='A relancer'>A relancer</option>
+                                            $option5="<option value='A relancer'>A relancer</option>
                                             <option value='Contrat/compromis signé'>A rappeler</option>
                                             <option value='Contrat/compromis signé'>Contrat/compromis signé</option>";
                                         break;
                                     }
                                 ?>   
 
-                                <select class="mdb-select md-form form-control" id="suivi" name="suivi">
-                                    <option value="" disabled>Suivi</option>
-                                    <option value="{{ $client->suivi }}">{{ $client->suivi }}</option>
-                                    <?php echo $option4; ?>                               
+                                <select class="mdb-select md-form form-control" id="suivi" name="suivi" title="Suivi">
+                                    <option value="{{ $client->suivi }}" selected>{{ $client->suivi }}</option>
+                                    <?php echo $option5; ?>                               
                                 </select>                            
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="budget">Budget</label>
                                 <input id="budget" value="{{ $client->budget }}" type="text" class="form-control" name="budget">
-                            </div>
-                            <div class="form-group col-md-4 col-lg-3">
-                                <label for="propositions">Propositions Clients</label>
-                                <input id="propositions" value="{{ $client->propositions }}" type="text" class="form-control" name="propositions">
-                            </div>
+                            </div>                            
                             <div class="form-group col-md-4 col-lg-3">
                                 <label for="visites">Visites Effectuées</label>
                                 <input id="visites" value="{{ $client->visites }}" type="text" class="form-control" name="visites">
@@ -299,7 +319,7 @@
    
                         <button type="submit" class="btn btn-success btn-sm">Sauvegarder</button>
 
-                        <a href="/home" class="btn btn-primary btn-sm">Retour</a>                 
+                        <a href="/home" class="btn btn-primary btn-sm">Retour</a>
                     </form>
                 </div>
             </div>

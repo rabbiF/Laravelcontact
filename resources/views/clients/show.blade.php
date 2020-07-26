@@ -41,11 +41,7 @@
                             <div class="form-group col-md-2">
                                 <label for="etat">Etat</label>
                                 <input id="etat" value="{{ $client->etat }}" disabled type="text" class="form-control" name="etat">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="typologie">Typologie</label>
-                                <input id="typologie" value="{{ $client->typologie }}" disabled type="text" class="form-control" name="typologie">
-                            </div>
+                            </div>                            
                             <div class="form-group col-md-3">
                                 <label for="secteur">Secteur</label>
                                 <input id="secteur" value="{{ $client->secteur }}" disabled type="text" class="form-control" name="secteur">
@@ -61,11 +57,7 @@
                             <div class="form-group col-md-2">
                                 <label for="budget">Budget</label>
                                 <input id="budget" value="{{ $client->budget }}" disabled type="text" class="form-control" name="budget">
-                            </div>
-                            <div class="form-group col-md-4 col-lg-3">
-                                <label for="propositions">Propositions Clients</label>
-                                <input id="propositions" value="{{ $client->propositions }}" disabled type="text" class="form-control" name="propositions">
-                            </div>
+                            </div>                            
                             <div class="form-group col-md-3 col-lg-3">
                                 <label for="visites">Visites Effectuées</label>
                                 <input id="visites" value="{{ $client->visites }}" disabled type="text" class="form-control" name="visites">
