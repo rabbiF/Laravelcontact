@@ -49,7 +49,10 @@ class ClientController extends Controller
             'firstname' => 'required|min:2',
             'email' => 'required|email',
             'phone' => 'required'
-        ]);
+        ]); 
+
+        $news = $request->input('type_de_bien');
+        $news = implode(',', $news);        
 
         $client = Auth::user()->clients()->create([
             'date_contact' =>  $request->date_contact,
@@ -57,29 +60,18 @@ class ClientController extends Controller
             'firstname' => $request->firstname,
             'email' => $request->email,
             'phone' => $request->phone,
-            'contact_origine' => $request->contact_origine,            
+            'contact_origine' => $request->contact_origine,
             'projet' => $request->projet,
-            'type_de_bien' => $request->type_de_bien,
+            'type_de_bien' => $news,
             'etat'=> $request->etat,
-            'typologie' => $request->typologie, 
             'secteur' => $request->secteur,
             'commentaires' => $request->commentaires,
             'contact' => $request->contact,
             'suivi' => $request->suivi,
             'budget' => $request->budget,
-            'propositions' => $request->propositions,
             'visites' => $request->visites,
-            'client_nego' => $request->client_nego        
+            'client_nego' => $request->client_nego
         ]);
-
-        /*foreach($request->biens as $g)
-        {          
-            DB::table('bien_client')->insert([
-                'client_id' => $client->id,
-                'bien_id' => $g,
-                'created_at' => Carbon::now()
-            ]); 
-        } */       
 
         $request->session()->flash('success', 'Insertion réussie.');
         return back();
@@ -122,7 +114,27 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {    
-        $client->update($request->all());        
+        $news = $request->input('type_de_bien');
+        $news = implode(',', $news);          
+
+        $client->update([
+            'date_contact' =>  $request->date_contact,
+            'name' => $request->name,
+            'firstname' => $request->firstname,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'contact_origine' => $request->contact_origine,
+            'projet' => $request->projet,
+            'type_de_bien' => $news,
+            'etat'=> $request->etat,
+            'secteur' => $request->secteur,
+            'commentaires' => $request->commentaires,
+            'contact' => $request->contact,
+            'suivi' => $request->suivi,
+            'budget' => $request->budget,
+            'visites' => $request->visites,
+            'client_nego' => $request->client_nego
+        ]);
 
         $request->session()->flash('success', 'Modification réussie.');
         return redirect()->back();
@@ -147,19 +159,33 @@ class ClientController extends Controller
         $search = $request->query('bien');
 
         if(isset($search)){
+            #formatage value search
             $search = $request->fullUrl();
             $search= explode('bien=', $search);
             unset($search[0]);
             $search = array_values($search);
             $search = str_replace("&", "", $search);
-
-            $result =  Auth::user()->clients()
-                ->whereIn('clients.type_de_bien', $search)
+            $search = implode("|", $search);
+            
+            $result =  DB::table('clients')
+                ->join('users', function ($join) 
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.*')
+                ->where('clients.type_de_bien',"rlike", $search)
                 ->paginate(10);
         }else{
-            $search = $request->query('q');          
+            $search = $request->query('q');
 
-            $result =  Auth::user()->clients()
+            $result =  DB::table('clients')
+                ->join('users', function ($join)
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.*')
                 ->where('clients.email', 'like', '%'.$search.'%')
                 ->orWhere('clients.phone', 'like', '%'.$search.'%')
                 ->orWhere('clients.type_de_bien', 'like', '%'.$search.'%')
@@ -168,7 +194,7 @@ class ClientController extends Controller
                 ->paginate(10);
         }
 
-        return view('result', compact('search', 'result'));                 
+        return view('result', compact('search', 'result'));        
     }
 
     public function download(Request $request)
@@ -216,30 +242,31 @@ class ClientController extends Controller
                 # formatage Get bien
                 $searchBien = $searchUrl;
                 $searchBien = explode('bien', $searchBien);
-                unset($searchBien[0]);                
+                unset($searchBien[0]);
                 $searchBien = array_values($searchBien);
                 $searchArray = ["&tel_search=","&mail_search=","="];
                 $replaceArray = [""];
                 $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
-                
+                $searchBien = implode("|", $searchBien);
+
                 # if clic btn export tel.
                 if(strpos($searchUrl, "tel_search")){
                     $list = Auth::user()->clients()
                         ->select('phone')  
-                        ->whereIn('clients.type_de_bien', $searchBien)
+                        ->where('clients.type_de_bien',"rlike", $searchBien)
                         ->get()
-                        ->toArray();                        
+                        ->toArray();
                 }
                 # if clic btn export mail.
                 if(strpos($searchUrl, "mail_search")){
                     $list = Auth::user()->clients()
                     ->select('email')
-                    ->whereIn('clients.type_de_bien', $searchBien) 
+                    ->where('clients.type_de_bien',"rlike", $searchBien)
                     ->get()
-                    ->toArray();                   
+                    ->toArray();
                 }
-            }                        
-        }      
+            }
+        }
 
         # add headers for each column in the CSV download
         array_unshift($list, array_keys($list[0]));
@@ -253,6 +280,6 @@ class ClientController extends Controller
             fclose($FH);
         };
 
-        return Response::stream($callback, 200, $headers);        
+        return Response::stream($callback, 200, $headers);
     }
 }
