@@ -26,13 +26,11 @@ class CreateClientsTable extends Migration
             $table->string('projet')->nullable();
             $table->string('type_de_bien')->nullable();
             $table->string('etat')->nullable();
-            $table->string('typologie')->nullable();
             $table->string('secteur')->nullable();
             $table->text('commentaires')->nullable();
             $table->string('contact')->nullable();
             $table->string('suivi')->nullable();
             $table->string('budget')->nullable();
-            $table->string('propositions')->nullable();
             $table->string('visites')->nullable();
             $table->string('client_nego')->nullable();
             $table->timestamps();
