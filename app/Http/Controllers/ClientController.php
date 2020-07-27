@@ -69,7 +69,6 @@ class ClientController extends Controller
             'contact' => $request->contact,
             'suivi' => $request->suivi,
             'budget' => $request->budget,
-            'visites' => $request->visites,
             'client_nego' => $request->client_nego
         ]);
 
@@ -115,7 +114,7 @@ class ClientController extends Controller
     public function update(Request $request, Client $client)
     {    
         $news = $request->input('type_de_bien');
-        $news = implode(',', $news);          
+        $news = implode(',', $news);
 
         $client->update([
             'date_contact' =>  $request->date_contact,
@@ -132,7 +131,6 @@ class ClientController extends Controller
             'contact' => $request->contact,
             'suivi' => $request->suivi,
             'budget' => $request->budget,
-            'visites' => $request->visites,
             'client_nego' => $request->client_nego
         ]);
 
@@ -165,6 +163,7 @@ class ClientController extends Controller
             unset($search[0]);
             $search = array_values($search);
             $search = str_replace("&", "", $search);
+            $search = str_replace("%2F", "/", $search);
             $search = implode("|", $search);
             
             $result =  DB::table('clients')
@@ -194,7 +193,7 @@ class ClientController extends Controller
                 ->paginate(10);
         }
 
-        return view('result', compact('search', 'result'));        
+        return view('result', compact('search', 'result'));      
     }
 
     public function download(Request $request)
@@ -247,6 +246,7 @@ class ClientController extends Controller
                 $searchArray = ["&tel_search=","&mail_search=","="];
                 $replaceArray = [""];
                 $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
+                $searchBien = str_replace("%2F", "/", $searchBien);
                 $searchBien = implode("|", $searchBien);
 
                 # if clic btn export tel.
