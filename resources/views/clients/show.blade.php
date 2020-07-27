@@ -37,15 +37,15 @@
                             <div class="form-group col-md-3 col-lg-2">
                                 <label for="type_de_bien">Type de Bien</label>
                                 <input id="type_de_bien" value="{{ $client->type_de_bien }}" disabled type="text" class="form-control" name="type_de_bien">
-                            </div>                                  
+                            </div>
                             <div class="form-group col-md-2">
                                 <label for="etat">Etat</label>
                                 <input id="etat" value="{{ $client->etat }}" disabled type="text" class="form-control" name="etat">
-                            </div>                            
+                            </div>
                             <div class="form-group col-md-3">
                                 <label for="secteur">Secteur</label>
                                 <input id="secteur" value="{{ $client->secteur }}" disabled type="text" class="form-control" name="secteur">
-                            </div>                            
+                            </div>
                             <div class="form-group col-md-3">
                                 <label for="contact">Prise de contact</label>
                                 <input id="contact" value="{{ $client->contact }}" disabled type="text" class="form-control" name="contact">
@@ -57,15 +57,11 @@
                             <div class="form-group col-md-2">
                                 <label for="budget">Budget</label>
                                 <input id="budget" value="{{ $client->budget }}" disabled type="text" class="form-control" name="budget">
-                            </div>                            
-                            <div class="form-group col-md-3 col-lg-3">
-                                <label for="visites">Visites Effectuées</label>
-                                <input id="visites" value="{{ $client->visites }}" disabled type="text" class="form-control" name="visites">
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3 col-lg-3">
                                 <label for="client_nego">Client Négo.</label>
                                 <input id="client_nego" value="{{ $client->client_nego }}" disabled type="text" class="form-control" name="client_nego">
-                            </div>                                                     
+                            </div>
                         </div>
 
                         <div class="form-group">

@@ -48,11 +48,12 @@
                                 <option value="T3">T3</option>
                                 <option value="T4">T4</option>
                                 <option value="T5">T5</option>
-                                <option value="Villas">Villas</option>
+                                <option value="T6">T6</option>
+                                <option value="T7">T7</option>
+                                <option value="Villas/Maison">Villas/Maison</option>
+                                <option value="Locaux/Bureaux">Locaux/Bureaux</option>
                                 <option value="Terrain">Terrain</option>
-                                <option value="Locaux Commmerciaux">Locaux Commmerciaux</option>
-                                <option value="Bureaux">Bureaux</option>
-                                <option value="Maison">Maison</option>
+                                <option value="Garage">Garage</option>
                             </select>
                         </div>
                         <div class="form-group col-md-4">
@@ -88,9 +89,6 @@
                             <input id="budget" placeholder="Budget" type="text" class="form-control" name="budget">
                         </div>
                         <div class="form-group col-md-3 col-lg-3">
-                            <input id="visites" placeholder="Visites Effectuées" type="text" class="form-control" name="visites">
-                        </div>
-                        <div class="form-group col-md-3">
                             <input id="client_nego" placeholder="Client Négo." type="text" class="form-control" name="client_nego">
                         </div>
                     </div>
