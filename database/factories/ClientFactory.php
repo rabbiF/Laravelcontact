@@ -15,16 +15,13 @@ $factory->define(App\Model\Client::class, function (Faker $faker) {
         "phone" => $faker->phoneNumber,
         "contact_origine" => $faker->word,
         "projet" => $faker->word,
-        "projet" => $faker->word,
+        "type_de_bien" => $faker->word,
         "etat" => $faker->word,
-        "typologie" => $faker->word,
         "secteur" => $faker->streetName,
         "commentaires" => $faker->text,
         "contact" => $faker->word,
         "suivi" => $faker->word,
         "budget" => $faker->word,
-        "propositions" => $faker->word,
-        "visites" => $faker->word,
         "client_nego" => $faker->word
     ];
 });

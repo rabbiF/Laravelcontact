@@ -31,7 +31,6 @@ class CreateClientsTable extends Migration
             $table->string('contact')->nullable();
             $table->string('suivi')->nullable();
             $table->string('budget')->nullable();
-            $table->string('visites')->nullable();
             $table->string('client_nego')->nullable();
             $table->timestamps();
         });
