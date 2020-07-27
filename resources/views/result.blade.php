@@ -32,11 +32,12 @@
                                         <option value="T3">T3</option>
                                         <option value="T4">T4</option>
                                         <option value="T5">T5</option>
-                                        <option value="Villas">Villas</option>
+                                        <option value="T6">T6</option>
+                                        <option value="T7">T7</option>
+                                        <option value="Villas/Maison">Villas/Maison</option>
+                                        <option value="Locaux/Bureaux">Locaux/Bureaux</option>
                                         <option value="Terrain">Terrain</option>
-                                        <option value="Locaux Commmerciaux">Locaux Commmerciaux</option>
-                                        <option value="Bureaux">Bureaux</option>
-                                        <option value="Maison">Maison</option>
+                                        <option value="Garage">Garage</option>
                                     </select>
                                 </div>
 
@@ -94,7 +95,7 @@
                                 </td>
                             </tr>
                             <tr class="collapse" id="collapse{{ $c->id }}" aria-labelledby="heading{{ $c->id }}" data-parent="#accordionExample">
-                                <td colspan="6">                                    
+                                <td colspan="6">
                                     <form>
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
