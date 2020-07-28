@@ -15,8 +15,8 @@
                                 <input id="date_contact" value="{{ \Carbon\Carbon::parse($client->date_contact)->format('d/m/Y') }}" disabled type="text" class="form-control" name="date_contact">
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="fullname">Nom et Prénom</label>                            
-                                <input id="fullname" value="{{ $client->name }} {{ $client->firstname }}" disabled type="text" class="form-control" name="name">                         
+                                <label for="fullname">Nom et Prénom</label>
+                                <input id="fullname" value="{{ $client->name }} {{ $client->firstname }}" disabled type="text" class="form-control" name="name">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="email">Email</label>
@@ -61,6 +61,10 @@
                             <div class="form-group col-md-3 col-lg-3">
                                 <label for="client_nego">Client Négo.</label>
                                 <input id="client_nego" value="{{ $client->client_nego }}" disabled type="text" class="form-control" name="client_nego">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="actif">Actif</label>
+                                <input id="actif" value="{{ $client->actif }}" disabled type="text" class="form-control" name="actif">
                             </div>
                         </div>
 

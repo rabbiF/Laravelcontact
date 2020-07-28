@@ -12,24 +12,24 @@
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-3 col-lg-2">
-                                <label for="date_contact">Date de contact</label>
-                                <input id="date_contact" value="{{ $client->date_contact }}" type="date" class="form-control" name="date_contact">
+                                <label for="date_contact">Date de contact *</label>
+                                <input id="date_contact" value="{{ $client->date_contact }}" type="date" class="form-control" name="date_contact" required>
                             </div>
                             <div class="form-group col-md-2">
-                                <label for="name">Nom</label>
-                                <input id="name" value="{{ $client->name }}" type="text" class="form-control" name="name">                         
+                                <label for="name">Nom *</label>
+                                <input id="name" value="{{ $client->name }}" type="text" class="form-control" name="name" required>                         
                             </div>
                             <div class="form-group col-md-2">
-                                <label for="firstname">Prénom</label>
-                                <input id="firstname" value="{{ $client->firstname }}" type="text" class="form-control" name="firstname">                         
+                                <label for="firstname">Prénom *</label>
+                                <input id="firstname" value="{{ $client->firstname }}" type="text" class="form-control" name="firstname" required>                         
                             </div>
                             <div class="form-group col-md-3">
-                                <label for="email">Email</label>
-                                <input id="email" value="{{ $client->email }}" type="text" class="form-control" name="email">
+                                <label for="email">Email *</label>
+                                <input id="email" value="{{ $client->email }}" type="text" class="form-control" name="email" required>
                             </div>
                             <div class="form-group col-md2">
-                                <label for="tel">Tél.</label>
-                                <input id="tel" value="{{ $client->phone }}" type="text" class="form-control" name="phone">
+                                <label for="tel">Tél. * </label>
+                                <input id="tel" value="{{ $client->phone }}" type="text" class="form-control" name="phone" required>
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="contact_origine">Origine Contact</label>
@@ -63,7 +63,7 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-3 col-lg-2">
-                                <label for="type">Type de Bien</label>
+                                <label for="type">Type de Bien *</label>
                                 <?php
                                     $option2="<option value='T1'>T1</option>
                                     <option value='T2'>T2</option>
@@ -329,11 +329,30 @@
                                 <label for="client_nego">Client Négo.</label>
                                 <input id="client_nego" value="{{ $client->client_nego }}" type="text" class="form-control" name="client_nego">
                             </div>
+                            <div class="form-group col-md-2">
+                                <label for="actif">Actif</label>
+                                <?php
+                                    $option6="<option value='Oui'>Oui</option>
+                                    <option value='Non'>Non</option>";
+                                    switch ($client->actif){
+                                        case "Non" :
+                                            $option6="<option value='Oui'>Oui</option>";
+                                            break;
+                                        case "Oui" :
+                                            $option6="<option value='Non'>Non</option>";
+                                            break;
+                                    }
+                                ?>
+                                <select class="mdb-select md-form form-control" id="actif" name="actif" title="Actif">
+                                    <option value="{{ $client->actif }}" selected>{{ $client->actif }}</option>
+                                    <?php echo $option6; ?>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label for="commentaires">Commentaires</label>
-                            <textarea id="commentaires" class="form-control" name="commentaires" cols="5" rows="5">{{ $client->commentaires }}</textarea>                            
+                            <textarea id="commentaires" class="form-control" name="commentaires" cols="5" rows="5">{{ $client->commentaires }}</textarea>
                         </div> 
    
                         <button type="submit" class="btn btn-success btn-sm">Sauvegarder</button>

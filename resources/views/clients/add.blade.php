@@ -91,6 +91,13 @@
                         <div class="form-group col-md-3 col-lg-3">
                             <input id="client_nego" placeholder="Client Négo." type="text" class="form-control" name="client_nego">
                         </div>
+                        <div class="form-group col-md-4">
+                            <select class="mdb-select md-form form-control" id="actif" name="actif">
+                                <option value="" disabled selected>Actif</option>
+                                <option value="Oui">Oui</option>
+                                <option value="Non">Non</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
