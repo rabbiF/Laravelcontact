@@ -50,9 +50,13 @@ class ClientController extends Controller
             'email' => 'required|email',
             'phone' => 'required'
         ]); 
-
-        $news = $request->input('type_de_bien');
-        $news = implode(',', $news);        
+        
+        if(is_array($request->input('type_de_bien'))) {
+            $news = $request->input('type_de_bien');
+            $news = implode(',', $news);  
+        }else{
+            $news = $request->input('type_de_bien');
+        }              
 
         $client = Auth::user()->clients()->create([
             'date_contact' =>  $request->date_contact,
@@ -69,7 +73,8 @@ class ClientController extends Controller
             'contact' => $request->contact,
             'suivi' => $request->suivi,
             'budget' => $request->budget,
-            'client_nego' => $request->client_nego
+            'client_nego' => $request->client_nego,
+            'actif' => $request->actif
         ]);
 
         $request->session()->flash('success', 'Insertion réussie.');
@@ -113,6 +118,14 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {    
+        $this->validate($request, [
+            'date_contact' => 'required|date',
+            'name' => 'required|min:2',
+            'firstname' => 'required|min:2',
+            'email' => 'required|email',
+            'phone' => 'required'
+        ]);
+
         $news = $request->input('type_de_bien');
         $news = implode(',', $news);
 
@@ -131,7 +144,8 @@ class ClientController extends Controller
             'contact' => $request->contact,
             'suivi' => $request->suivi,
             'budget' => $request->budget,
-            'client_nego' => $request->client_nego
+            'client_nego' => $request->client_nego,
+            'actif' => $request->actif
         ]);
 
         $request->session()->flash('success', 'Modification réussie.');
@@ -211,7 +225,7 @@ class ClientController extends Controller
         $searchBien = $request->query('bien');
         $searchUrl =  $request->fullUrl();
 
-        if(isset($searchTel)){
+        if(strpos($searchUrl, "tel_search")){
             $list = Auth::user()->clients()
             ->select('phone')
             ->where('clients.email', 'like', '%'.$searchTel.'%')
@@ -223,7 +237,7 @@ class ClientController extends Controller
             ->toArray();
         }
 
-        if(isset($searchMail)){
+        if(strpos($searchUrl, "mail_search")){
             $list = Auth::user()->clients()
             ->select('email')
             ->where('clients.email', 'like', '%'.$searchMail.'%')
@@ -269,7 +283,7 @@ class ClientController extends Controller
         }
 
         # add headers for each column in the CSV download
-        array_unshift($list, array_keys($list[0]));
+        //array_unshift($list, array_keys($list[0]));
 
         $callback = function() use ($list) 
         {

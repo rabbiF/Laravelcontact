@@ -50,8 +50,8 @@
 
                         <div class="pr-0 pl-0 pb-2 pb-xl-0 col-md-12 col-lg-6 col-xl-6 text-lg-right text-left">
                             <div>
-                            <span><a href="{{ route('client.download', 'tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
-                            <span><a href="{{ route('client.download', 'mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
+                                <span><a href="{{ route('client.download', 'tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
+                                <span><a href="{{ route('client.download', 'mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addClient" data-whatever="@getbootstrap">
                                     Nouveau
                                 </button>

@@ -32,6 +32,7 @@ class CreateClientsTable extends Migration
             $table->string('suivi')->nullable();
             $table->string('budget')->nullable();
             $table->string('client_nego')->nullable();
+            $table->enum('actif', [1, 0])->nullable();
             $table->timestamps();
         });
     }
