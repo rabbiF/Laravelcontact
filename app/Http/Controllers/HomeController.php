@@ -26,13 +26,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if(Auth()->user()->isAdmin == 1) {   
-            $user = DB::table('users')->select('users.*')->paginate(15);      
+        if(Auth()->user()->isAdmin == 1) {
+            $user = DB::table('users')->select('users.*')->paginate(15);
             return view('admin.index')->with('user', $user);
         }else{
-            $clients = Auth::user()->clients()->paginate(5);
+            $clients = Auth::user()->clients()->get();
             return view('clients.index')->with('clients', $clients);
-        }        
+        }
     }
 
 }
