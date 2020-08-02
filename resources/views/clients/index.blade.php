@@ -41,13 +41,13 @@
 
                                         <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
                                             <select class="selectpicker" multiple title="Etat..." name="etat">
-                                                <?=$metrics->staticSelect('Etat')?>
+                                                <?=$metrics->staticSelect('Etat', 'Neuf/Ancien')?>
                                             </select>
                                         </div>
 
                                         <div class="form-group mb-0 pl-0 col-md-3">
                                             <select class="selectpicker" multiple title="Actif" name="actif">
-                                                <?=$metrics->staticSelect('Actif')?>
+                                                <?=$metrics->staticSelect('Actif', 'Oui')?>
                                             </select>
                                         </div>
 
