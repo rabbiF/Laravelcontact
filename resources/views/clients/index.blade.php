@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@inject('metrics', ' App\Http\Controllers\ClientController')
 <div class="container">
     <div class="row">
         @include('layouts.menu')
@@ -7,9 +8,14 @@
         @include('clients.partials.info')
             <div class="card card-default">
                 <div class="card-header bg-info text-white">Liste des clients</div>
-                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">                    
+                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">
                     <div class="form-inline pb-2 align-items-start">
-                        <div class="pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-inline pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
+                            <div class="form-inline pb-2 pr-2">
+                                <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                    Filtres
+                                </button>
+                            </div>
                             <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
                                 <div class="form-group mb-0">
                                     <input type="text" class="form-control" name="q" placeholder="Rechercher*" required>
@@ -22,30 +28,38 @@
                                 </div>
                             </form>
 
-                            <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
-                                <div class="form-group mb-0">
-                                    <select class="selectpicker" multiple title="Rechercher par bien..." name="bien" required>
-                                        <option value="T1">T1</option>
-                                        <option value="T2">T2</option>
-                                        <option value="T3">T3</option>
-                                        <option value="T4">T4</option>
-                                        <option value="T5">T5</option>
-                                        <option value="T6">T6</option>
-                                        <option value="T7">T7</option>
-                                        <option value="Villas/Maison">Villas/Maison</option>
-                                        <option value="Locaux/Bureaux">Locaux/Bureaux</option>
-                                        <option value="Terrain">Terrain</option>
-                                        <option value="Garage">Garage</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group mb-0">
-                                    <button class="btn btn-success" type="submit">
-                                        Rechercher
-                                    </button>
-                                </div>
-                            </form>
                             <em>* Recherche par email, tél., nom, prénom</em>
+
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                    <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
+                                        <div class="form-group mb-2 pl-0">
+                                            <select class="selectpicker" multiple title="Bien..." name="bien" required>
+                                                <?=($metrics->staticBien())['optionBien'] ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
+                                            <select class="selectpicker" multiple title="Etat..." name="etat">
+                                                <?=$metrics->staticSelect('Etat')?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-0 pl-0 col-md-3">
+                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                                <?=$metrics->staticSelect('Actif')?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-0 pt-2 pt-md-0">
+                                            <button class="btn btn-success" type="submit">
+                                                Appliquer
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="pr-0 pl-0 pb-2 pb-xl-0 col-md-12 col-lg-6 col-xl-6 text-lg-right text-left">
@@ -57,11 +71,11 @@
                                 </button>
                             </div>    
                         </div>
-                    </div>                    
+                    </div>
                     @include('clients.table')
                 </div>
             </div>
-            <span>&nbsp;</span> {{ $clients->links() }}
+            <span>&nbsp;</span>
         </div>
     </div>
 </div>

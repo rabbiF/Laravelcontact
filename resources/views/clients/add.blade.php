@@ -22,67 +22,46 @@
                             <input id="name" placeholder="Nom *" type="text" class="form-control" name="name" required>
                         </div>
                         <div class="form-group col-md-3">
-                            <input id="firstname" placeholder="Prénom *" type="text" class="form-control" name="firstname" required>
+                            <input id="firstname" placeholder="Prénom" type="text" class="form-control" name="firstname">
                         </div>
                         <div class="form-group col-md-6">
-                            <input id="email" placeholder="Email *" type="text" class="form-control" name="email" required>
+                            <input id="email" placeholder="Email" type="text" class="form-control" name="email">
                         </div>
                         <div class="form-group col-md2 col-lg-4">
-                            <input id="tel" placeholder="N° Téléphone *" type="text" class="form-control" name="phone" required>
+                            <input id="tel" placeholder="N° Téléphone" type="text" class="form-control" name="phone">
                         </div>
                         <div class="form-group col-md-4">
                             <input id="contact_origine" placeholder="Origine Contact" type="text" class="form-control" name="contact_origine">
                         </div>
                         <div class="form-group col-md-4">
-                            <select class="mdb-select md-form form-control" id="projet" name="projet">
-                                <option value="" disabled selected>Projet</option>
-                                <option value="Location">Location</option>
-                                <option value="Achat/Vente">Achat/Vente</option>
-                                <option value="Investissement">Investissement</option>
+                            <select class="mdb-select md-form form-control" id="projet" name="projet" title="Projet">
+                                <?=$metrics->staticSelect("Projet") ?> 
                             </select>
                         </div>
                         <div class="form-group col-md-4 col-lg-6">
                             <select class="mdb-select md-form form-control" id="type_de_bien" name="type_de_bien[]" multiple title="Type de Bien">
-                                <option value="T1">T1</option>
-                                <option value="T2">T2</option>
-                                <option value="T3">T3</option>
-                                <option value="T4">T4</option>
-                                <option value="T5">T5</option>
-                                <option value="T6">T6</option>
-                                <option value="T7">T7</option>
-                                <option value="Villas/Maison">Villas/Maison</option>
-                                <option value="Locaux/Bureaux">Locaux/Bureaux</option>
-                                <option value="Terrain">Terrain</option>
-                                <option value="Garage">Garage</option>
+                                <?=($metrics->staticBien())['optionBien'] ?>
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <select class="mdb-select md-form form-control" id="etat" name="etat">
-                                <option value="" disabled selected>Etat</option>
-                                <option value="Neuf">Neuf</option>
-                                <option value="Ancien">Ancien</option>
-                                <option value="Neuf/Ancien">Neuf/Ancien</option>
+                            <select class="mdb-select md-form form-control" id="etat" name="etat" title="Etat">
+                                <?=$metrics->staticSelect("Etat") ?> 
                             </select>
                         </div>
-                        <div class="form-group col-md-6 col-lg-8">
+                        <div class="form-group col-md-12">
                             <input id="secteur" placeholder="Secteur" type="text" class="form-control" name="secteur">
-                        </div>
+                            <div class="mt-3">
+                                <?=$metrics->staticOptionColor() ?>
+                            </div>
+                        </div>                        
                         <div class="form-group col-md-4">
-                            <select class="mdb-select md-form form-control" id="contact" name="contact">
-                                <option value="" disabled selected>Prise de contact</option>
-                                <option value="Tel">Tel</option>
-                                <option value="Sms">Sms</option>
-                                <option value="Mail">Mail</option>
-                                <option value="Direct">Direct</option>
+                            <select class="mdb-select md-form form-control" id="contact" name="contact" title="Prise de contact">
+                                <?=$metrics->staticSelect("Contact") ?> 
                             </select>
                         </div>
                         <div class="form-group col-md-6">
-                            <select class="mdb-select md-form form-control" id="suivi" name="suivi">
-                                <option value="" disabled selected>Suivi</option>
-                                <option value="A rappeler">A rappeler</option>
-                                <option value="A relancer">A relancer</option>
-                                <option value="Contrat/compromis signé">Contrat/compromis signé</option>
-                                <option value="Acte signé">Acte signé</option>
+                            <select class="mdb-select md-form form-control" id="suivi" name="suivi" title="Suivi">
+                                <?=$metrics->staticSelect("Suivi") ?>
                             </select>
                         </div>
                         <div class="form-group col-md-3">
@@ -92,10 +71,8 @@
                             <input id="client_nego" placeholder="Client Négo." type="text" class="form-control" name="client_nego">
                         </div>
                         <div class="form-group col-md-4">
-                            <select class="mdb-select md-form form-control" id="actif" name="actif">
-                                <option value="" disabled selected>Actif</option>
-                                <option value="Oui">Oui</option>
-                                <option value="Non">Non</option>
+                            <select class="mdb-select md-form form-control" id="actif" name="actif" title="Actif">
+                                <?=$metrics->staticSelect("Actif") ?>
                             </select>
                         </div>
                     </div>

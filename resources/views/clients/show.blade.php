@@ -7,7 +7,7 @@
     @include('clients.partials.info')
             <div class="card card-default">
                 <div class="card-header bg-info text-white">Detail client : {{ $client->id }} </div>
-                <div class="card-body">    
+                <div class="card-body">
                     <form>
                         <div class="form-row">
                             <div class="form-group col-md-3 col-lg-2">

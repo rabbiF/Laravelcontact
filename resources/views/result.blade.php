@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-
+@inject('metrics', ' App\Http\Controllers\ClientController')
 @if(count($result))
 <div class="container">
     <div class="row">
@@ -11,7 +11,12 @@
                 <div class="card-header bg-info text-white">Résultat(s) Trouvé(s)</div>
                 <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">
                     <div class="form-inline pb-2 align-items-start">
-                        <div class="pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-inline pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
+                            <div class="form-inline pb-2 pr-2">
+                                <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                    Filtres
+                                </button>
+                            </div>    
                             <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
                                 <div class="form-group mb-0">
                                     <input type="text" class="form-control" name="q" placeholder="Rechercher*" required>
@@ -24,35 +29,43 @@
                                 </div>
                             </form>
 
-                            <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
-                                <div class="form-group mb-0">
-                                    <select class="selectpicker" multiple title="Rechercher par bien..." name="bien" required>
-                                        <option value="T1">T1</option>
-                                        <option value="T2">T2</option>
-                                        <option value="T3">T3</option>
-                                        <option value="T4">T4</option>
-                                        <option value="T5">T5</option>
-                                        <option value="T6">T6</option>
-                                        <option value="T7">T7</option>
-                                        <option value="Villas/Maison">Villas/Maison</option>
-                                        <option value="Locaux/Bureaux">Locaux/Bureaux</option>
-                                        <option value="Terrain">Terrain</option>
-                                        <option value="Garage">Garage</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group mb-0">
-                                    <button class="btn btn-success" type="submit">
-                                        Rechercher
-                                    </button>
-                                </div>
-                            </form>
                             <em>* Recherche par email, tél., nom, prénom</em>
+
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                    <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
+                                        <div class="form-group mb-2 pl-0">
+                                            <select class="selectpicker" multiple title="Bien..." name="bien" required>
+                                                <?=($metrics->staticBien())['optionBien'] ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
+                                            <select class="selectpicker" multiple title="Etat..." name="etat">
+                                                <?=$metrics->staticSelect('Etat')?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-0 pl-0 col-md-3">
+                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                                <?=$metrics->staticSelect('Actif')?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-0 pt-2 pt-md-0">
+                                            <button class="btn btn-success" type="submit">
+                                                Appliquer
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="pr-0 pl-0 pb-2 pb-xl-0 col-md-12 col-lg-6 col-xl-6 text-lg-right text-left">
                             <div>
-                                <?php
+                            <?php
                                     $tabUrl = parse_url ( $_SERVER [ 'REQUEST_URI' ] ) ;
                                     $listparam = explode ( "bien=" , $tabUrl [ 'query' ] ) ;
                                      
@@ -62,15 +75,56 @@
                                         $listparam = str_replace("bien", "", $listparam);
                                         $listparam = implode("bien", $listparam);
                                         $listparam = str_replace("&", "", $listparam);
+
+                                        $listparam1 = $listparam2 = "";
+                                      
+                                        if(strpos($listparam,"actif=")){
+                                            $listparam2 = explode ( "actif=" , $listparam);
+                                            unset($listparam2[0]);
+                                            $listparam2 = array_values($listparam2); 
+                                            $listparam2 = str_replace("actif=", "", $listparam2);
+                                            $listparam2 = implode("actif", $listparam2);
+                                            $listparam2 = str_replace("&", "", $listparam2); 
+
+                                            $searchArray = ["actif="];
+                                            $listparam = str_replace($searchArray, "", $listparam);
+                                            $listparam = str_replace($listparam2, "", $listparam);
+                                        }else{
+                                            $listparam1 = explode ( "etat=" , $listparam);
+                                            unset($listparam1[0]);
+                                            $listparam1 = array_values($listparam1); 
+                                            $listparam1 = str_replace("etat=", "", $listparam1);
+                                            $listparam1 = implode("etat", $listparam1);
+                                            $listparam1 = str_replace("&", "", $listparam1); 
+
+                                            $searchArray = ["etat="];
+                                            $listparam = str_replace($searchArray, "", $listparam);
+                                            $listparam = str_replace($listparam1, "", $listparam);
+                                            
+                                            $listparam2 = explode ( "actif=" , $listparam1);
+                                            unset($listparam2[0]);
+                                            $listparam2 = array_values($listparam2); 
+                                            $listparam2 = str_replace("actif=", "", $listparam2);
+                                            $listparam2 = implode("actif", $listparam2);
+                                            $listparam2 = str_replace("&", "", $listparam2);
+                                            
+                                            $searchArray = ["actif="];
+                                            $listparam1 = str_replace($searchArray, "", $listparam1);
+                                            $listparam1 = str_replace($listparam2, "", $listparam1);
+
+                                            $searchArray = ["actif="];
+                                            $listparam = str_replace($searchArray, "", $listparam);
+                                            $listparam = str_replace($listparam2, "", $listparam);
+                                        }
                                     }else{
                                         $listparam="";
+                                        $listparam1="";
                                     }
                                 ?>
-                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
-                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
-                            </div>
+                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
+                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>                            </div>    
                         </div>
-                    </div>
+                    </div> 
                     <table id="customer_data" class="table table-bordered">
                         <thead class="thead-light"> 
                             <th>Nom</th>
@@ -82,16 +136,34 @@
                         </thead>
                         <tbody id="accordionExample">
                             @foreach($result as $c)
-                            <tr id="heading{{ $c->id }}">
-                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}" >{{ $c->name }}</td>
-                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">{{ $c->firstname }}</td>
+                            <?php 
+                                (isset($c->options_color)) ? $textWhite = "text-white" : $textWhite = "";
+                            ?>
+                            <tr id="heading{{ $c->id }}" class="bg-{{ $c->options_color }} <?=$textWhite ?>">
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}" >
+                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->name }}</span>
+                                </td>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->firstname }}</span>
+                                </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">{{ $c->phone }} </td>
-                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">{{ $c->email }}</td>
-                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">{{ $c->type_de_bien }}</td>
-                                <td colspan="3" class="text-center">
-                                    <a class="btn btn-info btn-sm" href="{{ route('client.show', ['client' => $c->id]) }}">details</a>
-                                    <a class="btn btn-warning btn-sm" href="{{ route('client.edit', ['client' => $c->id]) }}">editer</a>
-                                    <a id="supprimer" class="btn btn-danger btn-sm" href="{{ route('client.delete', ['client' => $c->id]) }}">supprimer</a>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->email }}</span>
+                                </td>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->type_de_bien }}</span>
+                                    <div class="mt-2">
+                                        <?=($metrics->staticBien($c->type_de_bien))['optionColor'] ?>
+                                    </div>
+                                </td>
+                                <td colspan="2" class="text-center">
+                                    <div>
+                                        <a class="btn btn-info btn-sm" href="{{ route('client.show', ['client' => $c->id]) }}">details</a>
+                                        <a class="btn btn-warning btn-sm" href="{{ route('client.edit', ['client' => $c->id]) }}">editer</a>
+                                    </div>
+                                    <div class="mt-2">
+                                        <a id="supprimer" class="btn btn-danger btn-sm" href="{{ route('client.delete', ['client' => $c->id]) }}">supprimer</a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr class="collapse" id="collapse{{ $c->id }}" aria-labelledby="heading{{ $c->id }}" data-parent="#accordionExample">
@@ -101,14 +173,22 @@
                                             <div class="form-group col-md-4">
                                                 <label for="date_contact">Date de contact</label>
                                                 <input id="date_contact" value="{{ \Carbon\Carbon::parse($c->date_contact)->format('d/m/Y') }}" disabled type="text" class="form-control" name="date_contact">
-                                            </div> 
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <label for="etat">Etat</label>
+                                                <input id="etat" value="{{ $c->etat }}" disabled type="text" class="form-control" name="etat">
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <label for="actif">Actif</label>
+                                                <input id="actif" value="{{ $c->actif }}" disabled type="text" class="form-control" name="actif">
+                                            </div>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="commentaires">Commentaires</label>
                                             <textarea id="commentaires" class="form-control" disabled name="commentaires" cols="5" rows="5">{{ $c->commentaires }}</textarea>
                                         </div>
-                                    </form>                                        
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach
