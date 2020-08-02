@@ -1,3 +1,21 @@
 #customer_data td[data-toggle="collapse"] {
     cursor: pointer;
 }
+.bg-yellow {
+    background-color: yellow !important;
+}
+.bg-purple {
+    background-color: purple !important;
+}
+.bg-darkred {
+    background-color: DarkRed !important;
+}
+.bg-pink {
+    background-color: pink !important;
+}
+.bg-coral {
+    background-color: coral !important;
+}
+.w-08-rem {
+    width: 08rem;
+}
