@@ -3,10 +3,10 @@
 <div class="container">
     <div class="row">
         @include('admin.menu')
-        <div class="col-md-9 col-lg-10">        
+        <div class="col-md-9 col-lg-10">
             <div class="card card-default">
                 <div class="card-header bg-info text-white">Dashboard - Admin</div>
-                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">                                         
+                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">
                     <div class="form-inline pb-4">
                         <span><a href="{{ url('/exports') }}" class="btn btn-success">Export Clients</a></span>
                     </div>    
@@ -25,17 +25,27 @@
                             @if(count($clientsAll) > 0) @foreach($clientsAll as $c)
                                 <tr>
                                     <td>{{ $c->phone }}</td>
-                                    <td>{{ $c->email }}</td>
-                                    <td>{{ $c->name }}</td>
-                                    <td>{{ $c->firstname }}</td>
-                                    <td>{{ $c->type_de_bien }}</td>
-                                    <td>{{ $c->email_mandataires }}</td>
+                                    <td>
+                                        <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->email }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->name }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->firstname }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->type_de_bien }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->email_mandataires }}</span>
+                                    </td>
                                 </tr>
                             @endforeach @else
                             <p class="text-center bg-info text-white">
                                 Aucun client enregistré
                             </p>
-                            @endif                              
+                            @endif
                         </tbody>
                     </table>
                 </div>
