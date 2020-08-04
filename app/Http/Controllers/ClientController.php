@@ -53,7 +53,14 @@ class ClientController extends Controller
             $news = implode(',', $news);  
         }else{
             $news = $request->input('type_de_bien');
-        }              
+        }
+        
+        if(is_array($request->input('etat'))) {
+            $etat = $request->input('etat');
+            $etat = implode(',', $etat);  
+        }else{
+            $etat = $request->input('etat');
+        }
 
         $client = Auth::user()->clients()->create([
             'date_contact' =>  $request->date_contact,
@@ -64,7 +71,7 @@ class ClientController extends Controller
             'contact_origine' => $request->contact_origine,
             'projet' => $request->projet,
             'type_de_bien' => $news,
-            'etat'=> $request->etat,
+            'etat'=> $etat,
             'secteur' => $request->secteur,
             'commentaires' => $request->commentaires,
             'contact' => $request->contact,
@@ -72,7 +79,8 @@ class ClientController extends Controller
             'budget' => $request->budget,
             'client_nego' => $request->client_nego,
             'actif' => $request->actif,
-            'options_color' => $request->options_color
+            'options_color' => $request->options_color,
+            'options_secteur' => $request->options_secteur
         ]);
 
         $request->session()->flash('success', 'Insertion réussie.');
@@ -128,6 +136,13 @@ class ClientController extends Controller
             $news = $request->input('type_de_bien');
         }
 
+        if(is_array($request->input('etat'))) {
+            $etat = $request->input('etat');
+            $etat = implode(',', $etat);  
+        }else{
+            $etat = $request->input('etat');
+        }
+
         $client->update([
             'date_contact' =>  $request->date_contact,
             'name' => $request->name,
@@ -137,7 +152,7 @@ class ClientController extends Controller
             'contact_origine' => $request->contact_origine,
             'projet' => $request->projet,
             'type_de_bien' => $news,
-            'etat'=> $request->etat,
+            'etat'=> $etat,
             'secteur' => $request->secteur,
             'commentaires' => $request->commentaires,
             'contact' => $request->contact,
@@ -145,11 +160,12 @@ class ClientController extends Controller
             'budget' => $request->budget,
             'client_nego' => $request->client_nego,
             'actif' => $request->actif,
-            'options_color' => $request->options_color
+            'options_color' => $request->options_color,
+            'options_secteur' => $request->options_secteur
         ]);
 
         $request->session()->flash('success', 'Modification réussie.');
-        return redirect()->back();        
+        return redirect()->back();
     }
 
     /**
@@ -182,8 +198,17 @@ class ClientController extends Controller
             
             $searchEtat = $request->query('etat');
             $searchActif = $request->query('actif');
-            if(isset($searchEtat) && isset($searchActif)){
+
+            if(isset($searchEtat) && isset($searchActif)){ 
                 $search = str_replace("etat=".$searchEtat, "", $search);
+                $search = str_replace("etat=Neuf", "", $search);
+
+                $searchEtat= explode('etat=', $request->fullUrl());
+                unset($searchEtat[0]);
+                $searchEtat = array_values($searchEtat);
+                $searchEtat = str_replace("&", "", $searchEtat);
+                $searchEtat = str_replace("%2F", "/", $searchEtat);
+                $searchEtat = implode("|", $searchEtat);
 
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
@@ -193,23 +218,8 @@ class ClientController extends Controller
                 })
                 ->select('clients.*')
                 ->where([
-                    ['clients.etat','=', $searchEtat],
+                    ['clients.etat','rlike', $searchEtat],
                     ['clients.actif','=', $searchActif],
-                    ['clients.type_de_bien',"rlike", $search],
-                ])
-                ->get();
-            }elseif(isset($searchEtat)){
-                $search = str_replace("etat=".$searchEtat, "", $search);
-
-                $result =  DB::table('clients')
-                ->join('users', function ($join) 
-                {
-                    $join->on('clients.user_id', '=', 'users.id')
-                         ->where('users.id', '=', Auth::id());
-                })
-                ->select('clients.*')
-                ->where([
-                    ['clients.etat','=', $searchEtat],
                     ['clients.type_de_bien',"rlike", $search],
                 ])
                 ->get();
@@ -258,7 +268,7 @@ class ClientController extends Controller
                 ->get();
         }
 
-        return view('result', compact('search', 'result'));                 
+        return view('result', compact('search', 'result'));
     }
 
     public function download(Request $request)
@@ -295,7 +305,7 @@ class ClientController extends Controller
                 ->get()
                 ->toArray();
             }
-                        
+
         }
 
         if(strpos($searchUrl, "mail_search")){
@@ -315,8 +325,8 @@ class ClientController extends Controller
                 ->where('clients.user_id', '=', Auth::id())
                 ->get()
                 ->toArray();
-            }            
-        }        
+            }
+        }
 
         if(empty($list)){
             if(isset($searchBien)){
@@ -326,7 +336,7 @@ class ClientController extends Controller
                 $searchBien = explode('bien', $searchBien);
                 unset($searchBien[0]);
                 $searchBien = array_values($searchBien);
-                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","="];
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","Neuf","Ancien","etat","v","="];
                 $replaceArray = [""];
                 $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
                 $searchBien = str_replace("%2F", "/", $searchBien);
@@ -334,30 +344,28 @@ class ClientController extends Controller
                 
                 $searchBien = str_replace($searchEtat, "", $searchBien);
                 $searchBien = str_replace($searchActif, "", $searchBien);
+
+                $searchEtat = $searchUrl;
+                $searchEtat = explode('etat', $searchEtat);
+                unset($searchEtat[0]);
+                $searchEtat = array_values($searchEtat);
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","="];
+                $replaceArray = [""];
+                $searchEtat = str_replace($searchArray, $replaceArray, $searchEtat);
+                $searchEtat = str_replace("%2F", "/", $searchEtat);
+                $searchEtat = implode("|", $searchEtat);
                 
                 # if clic btn export tel.
                 if(strpos($searchUrl, "tel_search")){
-                    $toto="ok";
                     if(isset($searchEtat) || isset($searchActif)){
                         if(isset($searchEtat) && isset($searchActif)){
-                            $toto="oka";
                             $list = Auth::user()->clients()
                             ->select('phone')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.etat',"=", $searchEtat],
+                                ['clients.etat',"rlike", $searchEtat],
                                 ['clients.actif',"=", $searchActif]
-                            ])
-                            ->get()
-                            ->toArray();
-                        }elseif(isset($searchEtat)){
-                            $list = Auth::user()->clients()
-                            ->select('phone')
-                            ->where([
-                                ['clients.user_id', '=', Auth::id()],
-                                ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.etat',"=", $searchEtat],
                             ])
                             ->get()
                             ->toArray();
@@ -392,22 +400,12 @@ class ClientController extends Controller
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.etat',"=", $searchEtat],
+                                ['clients.etat',"rlike", $searchEtat],
                                 ['clients.actif',"=", $searchActif]
                             ])
                             ->get()
                             ->toArray();
-                        }elseif(isset($searchEtat)){
-                            $list = Auth::user()->clients()
-                            ->select('email')
-                            ->where([
-                                ['clients.user_id', '=', Auth::id()],
-                                ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.etat',"=", $searchEtat],
-                            ])
-                            ->get()
-                            ->toArray();
-                        }elseif(isset($searchActif)){                            
+                        }elseif(isset($searchActif)){
                             $list = Auth::user()->clients()
                             ->select('email')
                             ->where([
@@ -427,7 +425,7 @@ class ClientController extends Controller
                         ])
                         ->get()
                         ->toArray();
-                    }                    
+                    }
                 }
             }
         }
@@ -444,7 +442,7 @@ class ClientController extends Controller
             fclose($FH);
         };
 
-        return Response::stream($callback, 200, $headers);               
+        return Response::stream($callback, 200, $headers);
     }
 
     public static function staticBien($selected = null){
@@ -458,7 +456,7 @@ class ClientController extends Controller
             foreach($optionArray as $key => $opt) {
                 if(in_array($opt, $selected)) {
                     $optionBien .= "<option value='".$opt."' selected>".$opt."</option>";
-                    $optionColor .= "<span class='p-2 pb-0 pt-0 mt-1 mr-1 bg-".$optionArrayColor[$key]." text-white col-2 h-25 d-inline-block border rounded-circle' style='width: 18px;height: 18px;'></span>";                     
+                    $optionColor .= "<span class='p-2 pb-0 pt-0 mt-1 mr-1 bg-".$optionArrayColor[$key]." text-white col-2 h-25 d-inline-block border rounded' style='width: 30px;'></span>";                     
                 }else{
                     $optionBien .= "<option value='".$opt."'>".$opt."</option>";
                 }
@@ -477,10 +475,10 @@ class ClientController extends Controller
     }
     
     public static function staticOptionColor($selected = null){
-        $optionArray = ["secondary","darkred","purple","success","coral"];
+        $optionArray = ["secondary","darkred","purple","success","coral","white"];
         $optionColor = "";
 
-        if(isset($selected)){           
+        if(isset($selected)){
 
             foreach($optionArray as $key => $opt) {
                 if($opt == $selected) {
@@ -523,7 +521,7 @@ class ClientController extends Controller
                 $optionArray = ["Tel","Sms","Mail","Direct"];
                 break;
             case "Etat":
-                $optionArray = ["Neuf","Ancien","Neuf/Ancien"];
+                $optionArray = ["Neuf","Ancien"];
                 break;
             case "Projet":
                 $optionArray = ["Location","Achat/Vente","Investissement"];
@@ -531,9 +529,10 @@ class ClientController extends Controller
         }
 
         if(isset($selected)){
+            $selected = explode(",", $selected);
 
             foreach($optionArray as $key => $opt) {
-                if($opt == $selected) {
+                if(in_array($opt, $selected)) {
                     $option.= "<option value='".$opt."' selected>".$opt."</option>";
                 }else{
                     $option.= "<option value='".$opt."'>".$opt."</option>";

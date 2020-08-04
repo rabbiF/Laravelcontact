@@ -34,6 +34,7 @@ class CreateClientsTable extends Migration
             $table->string('client_nego')->nullable();
             $table->enum('actif', [1, 0])->nullable();
             $table->string('options_color')->nullable();
+            $table->string('options_secteur')->nullable();
             $table->timestamps();
         });
     }
