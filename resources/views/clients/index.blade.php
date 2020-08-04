@@ -4,11 +4,11 @@
 <div class="container">
     <div class="row">
         @include('layouts.menu')
-        <div class="col-md-9 col-lg-10">
+        <div class="col-md-9 col-lg-12">
         @include('clients.partials.info')
             <div class="card card-default">
                 <div class="card-header bg-info text-white">Liste des clients</div>
-                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">
+                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl">
                     <div class="form-inline pb-2 align-items-start">
                         <div class="form-inline pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
                             <div class="form-inline pb-2 pr-2">
@@ -41,12 +41,12 @@
 
                                         <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
                                             <select class="selectpicker" multiple title="Etat..." name="etat">
-                                                <?=$metrics->staticSelect('Etat', 'Neuf/Ancien')?>
+                                                <?=$metrics->staticSelect('Etat','Neuf,Ancien')?>
                                             </select>
                                         </div>
 
                                         <div class="form-group mb-0 pl-0 col-md-3">
-                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                            <select class="selectpicker" title="Actif" name="actif">
                                                 <?=$metrics->staticSelect('Actif', 'Oui')?>
                                             </select>
                                         </div>

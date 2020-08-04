@@ -44,16 +44,19 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <select class="mdb-select md-form form-control" id="etat" name="etat" title="Etat">
+                            <select class="mdb-select md-form form-control" id="etat" name="etat[]" multiple title="Etat">
                                 <?=$metrics->staticSelect("Etat") ?> 
                             </select>
                         </div>
                         <div class="form-group col-md-12">
                             <input id="secteur" placeholder="Secteur" type="text" class="form-control" name="secteur">
+                        </div>  
+                        <div class="form-group col-md-12">
+                            <input id="options_secteur" placeholder="Option" type="text" class="form-control" name="options_secteur">
                             <div class="mt-3">
                                 <?=$metrics->staticOptionColor() ?>
                             </div>
-                        </div>                        
+                        </div>
                         <div class="form-group col-md-4">
                             <select class="mdb-select md-form form-control" id="contact" name="contact" title="Prise de contact">
                                 <?=$metrics->staticSelect("Contact") ?> 

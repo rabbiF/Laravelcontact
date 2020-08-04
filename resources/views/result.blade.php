@@ -5,18 +5,18 @@
 <div class="container">
     <div class="row">
         @include('layouts.menu')
-        <div class="col-md-9 col-lg-10">
+        <div class="col-md-9 col-lg-12">
         @include('clients.partials.info')
             <div class="card card-default">
                 <div class="card-header bg-info text-white">Résultat(s) Trouvé(s)</div>
-                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm">
+                <div class="card-body card-body table-responsive-lg table-responsive-md table-responsive-sm table-responsive-xl">
                     <div class="form-inline pb-2 align-items-start">
                         <div class="form-inline pl-0 pb-2 pb-xl-2 col-md-12 col-lg-6 col-xl-6">
                             <div class="form-inline pb-2 pr-2">
                                 <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                                     Filtres
                                 </button>
-                            </div>    
+                            </div>
                             <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
                                 <div class="form-group mb-0">
                                     <input type="text" class="form-control" name="q" placeholder="Rechercher*" required>
@@ -42,12 +42,12 @@
 
                                         <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
                                             <select class="selectpicker" multiple title="Etat..." name="etat">
-                                                <?=$metrics->staticSelect('Etat', 'Neuf/Ancien')?>
+                                                <?=$metrics->staticSelect('Etat', 'Neuf,Ancien')?>
                                             </select>
                                         </div>
 
                                         <div class="form-group mb-0 pl-0 col-md-3">
-                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                            <select class="selectpicker" title="Actif" name="actif">
                                                 <?=$metrics->staticSelect('Actif', 'Oui')?>
                                             </select>
                                         </div>
@@ -89,6 +89,17 @@
                                             $searchArray = ["actif="];
                                             $listparam = str_replace($searchArray, "", $listparam);
                                             $listparam = str_replace($listparam2, "", $listparam);
+
+                                            $listparam1 = explode ( "etat=" , $listparam);
+                                            unset($listparam1[0]);
+                                            $listparam1 = array_values($listparam1); 
+                                            $listparam1 = str_replace("etat=", "", $listparam1);
+                                            $listparam1 = implode("etat", $listparam1);
+                                            $listparam1 = str_replace("&", "", $listparam1);
+
+                                            $searchArray = ["etat="];
+                                            $listparam = str_replace($searchArray, "", $listparam);
+                                            $listparam = str_replace($listparam1, "", $listparam);
                                         }else{
                                             $listparam1 = explode ( "etat=" , $listparam);
                                             unset($listparam1[0]);
@@ -101,7 +112,7 @@
                                             $listparam = str_replace($searchArray, "", $listparam);
                                             $listparam = str_replace($listparam1, "", $listparam);
                                             
-                                            $listparam2 = explode ( "actif=" , $listparam1);
+                                            $listparam2 = explode ("actif=" , $listparam1);
                                             unset($listparam2[0]);
                                             $listparam2 = array_values($listparam2); 
                                             $listparam2 = str_replace("actif=", "", $listparam2);
@@ -127,26 +138,27 @@
                     </div> 
                     <table id="customer_data" class="table table-bordered">
                         <thead class="thead-light"> 
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Tél.</th>
-                            <th>Email</th>
-                            <th>Bien</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Bien</th>
+                        <th>Option</th>
+                        <th>Etat</th>
+                        <th>Actif</th>
                             <th colspan="3" class="text-center">Actions</th>
                         </thead>
                         <tbody id="accordionExample">
                             @foreach($result as $c)
                             <?php 
-                                (isset($c->options_color)) ? $textWhite = "text-white" : $textWhite = "";
+                                (isset($c->options_color)) ? $color = "text-white" : $color = "";
                             ?>
-                            <tr id="heading{{ $c->id }}" class="bg-{{ $c->options_color }} <?=$textWhite ?>">
+                            <tr id="heading{{ $c->id }}">
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}" >
                                     <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->name }}</span>
                                 </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                                 <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->firstname }}</span>
                                 </td>
-                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">{{ $c->phone }} </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                                     <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->email }}</span>
                                 </td>
@@ -156,9 +168,20 @@
                                         <?=($metrics->staticBien($c->type_de_bien))['optionColor'] ?>
                                     </div>
                                 </td>
+                                <td class="bg-{{$c->options_color}} <?=$color ?>" data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->options_secteur }}</span>
+                                </td>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-05-rem d-inline-block pl-0 pr-0">{{ $c->etat }}</span>
+                                </td>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-03-rem d-inline-block pl-0 pr-0">{{ $c->actif }}</span>
+                                </td>
                                 <td colspan="2" class="text-center">
                                     <div>
                                         <a class="btn btn-info btn-sm" href="{{ route('client.show', ['client' => $c->id]) }}">details</a>
+                                    </div>
+                                    <div class="mt-2">
                                         <a class="btn btn-warning btn-sm" href="{{ route('client.edit', ['client' => $c->id]) }}">editer</a>
                                     </div>
                                     <div class="mt-2">
@@ -175,12 +198,8 @@
                                                 <input id="date_contact" value="{{ \Carbon\Carbon::parse($c->date_contact)->format('d/m/Y') }}" disabled type="text" class="form-control" name="date_contact">
                                             </div>
                                             <div class="form-group col-md-2">
-                                                <label for="etat">Etat</label>
-                                                <input id="etat" value="{{ $c->etat }}" disabled type="text" class="form-control" name="etat">
-                                            </div>
-                                            <div class="form-group col-md-2">
-                                                <label for="actif">Actif</label>
-                                                <input id="actif" value="{{ $c->actif }}" disabled type="text" class="form-control" name="actif">
+                                                <label for="phone">Tél.</label>
+                                                <input id="phone" value="{{ $c->phone }}" disabled type="text" class="form-control" name="phone">
                                             </div>
                                         </div>
 
