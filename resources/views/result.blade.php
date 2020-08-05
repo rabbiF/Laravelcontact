@@ -140,7 +140,7 @@
                         <thead class="thead-light"> 
                         <th>Nom</th>
                         <th>Prénom</th>
-                        <th>Email</th>
+                        <th>Tél.</th>
                         <th>Bien</th>
                         <th>Option</th>
                         <th>Etat</th>
@@ -160,7 +160,7 @@
                                 <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->firstname }}</span>
                                 </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
-                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->email }}</span>
+                                    <span class="text-truncate text-break w-05-rem d-inline-block pl-0 pr-0">{{ $c->phone }}</span>
                                 </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                                     <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->type_de_bien }}</span>
@@ -197,10 +197,10 @@
                                                 <label for="date_contact">Date de contact</label>
                                                 <input id="date_contact" value="{{ \Carbon\Carbon::parse($c->date_contact)->format('d/m/Y') }}" disabled type="text" class="form-control" name="date_contact">
                                             </div>
-                                            <div class="form-group col-md-2">
-                                                <label for="phone">Tél.</label>
-                                                <input id="phone" value="{{ $c->phone }}" disabled type="text" class="form-control" name="phone">
-                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="email">Email</label>
+                                                <input id="email" value="{{ $c->email }}" disabled type="text" class="form-control" name="email">
+                                            </div> 
                                         </div>
 
                                         <div class="form-group">
