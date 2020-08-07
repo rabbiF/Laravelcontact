@@ -20,7 +20,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Auth::user()->clients()->get();
+        $clients = Auth::user()->clients()->orderBy('date_contact', 'desc')->get();
 
         return view('clients.index')->with('clients', $clients);
     }
@@ -222,6 +222,7 @@ class ClientController extends Controller
                     ['clients.actif','=', $searchActif],
                     ['clients.type_de_bien',"rlike", $search],
                 ])
+                ->orderBy('date_contact', 'desc')
                 ->get();
             }elseif(isset($searchActif)){
                 $search = str_replace("actif=".$searchActif, "", $search);
@@ -237,6 +238,7 @@ class ClientController extends Controller
                     ['clients.type_de_bien',"rlike", $search],
                     ['clients.actif','=', $searchActif],
                 ])
+                ->orderBy('date_contact', 'desc')
                 ->get();
             }else{
                 $result =  DB::table('clients')
@@ -247,6 +249,7 @@ class ClientController extends Controller
                 })
                 ->select('clients.*')
                 ->where('clients.type_de_bien',"rlike", $search)
+                ->orderBy('date_contact', 'desc')
                 ->get();
             }
             
@@ -265,6 +268,7 @@ class ClientController extends Controller
                 ->orWhere('clients.type_de_bien', 'like', '%'.$search.'%')
                 ->orWhere('clients.name', 'like', '%'.$search.'%')
                 ->orWhere('clients.firstname', 'like', '%'.$search.'%')
+                ->orderBy('date_contact', 'desc')
                 ->get();
         }
 
@@ -292,16 +296,27 @@ class ClientController extends Controller
             if(isset($searchTel)){
                 $list =  Auth::user()->clients()
                 ->select('phone')
-                ->where('clients.email', 'like', '%'.$searchTel.'%')
-                ->orWhere('clients.phone', 'like', '%'.$searchTel.'%')
+                ->where([
+                    ['clients.user_id', '=', Auth::id()],
+                    ['clients.phone', '!=', 'null'],
+                ])
+                ->orWhere([
+                    ['clients.phone', 'like', '%'.$searchTel.'%'],
+                    ['clients.email', 'like', '%'.$searchTel.'%'],
+                ])
                 ->orWhere('clients.name', 'like', '%'.$searchTel.'%')
                 ->orWhere('clients.firstname', 'like', '%'.$searchTel.'%')
+                ->orderBy('date_contact', 'desc')
                 ->get()
                 ->toArray();
             }elseif(!isset($searchBien)){
                 $list =  Auth::user()->clients()
                 ->select('phone')
-                ->where('clients.user_id', '=', Auth::id())
+                ->where([
+                    ['clients.user_id', '=', Auth::id()],
+                    ['clients.phone', '!=', 'null'],
+                ])
+                ->orderBy('date_contact', 'desc')
                 ->get()
                 ->toArray();
             }
@@ -312,17 +327,27 @@ class ClientController extends Controller
             if(isset($searchMail)){
                 $list = Auth::user()->clients()
                 ->select('email')
-                ->where('clients.user_id', '=', Auth::id())
-                ->where('clients.email', 'like', '%'.$searchMail.'%')
-                ->orWhere('clients.phone', 'like', '%'.$searchMail.'%')
+                ->where([
+                    ['clients.user_id', '=', Auth::id()],
+                    ['clients.email', '!=', 'null'],
+                ])
+                ->orWhere([
+                    ['clients.phone', 'like', '%'.$searchMail.'%'],
+                    ['clients.email', 'like', '%'.$searchMail.'%'],
+                ])
                 ->orWhere('clients.name', 'like', '%'.$searchMail.'%')
                 ->orWhere('clients.firstname', 'like', '%'.$searchMail.'%')
+                ->orderBy('date_contact', 'desc')
                 ->get()
                 ->toArray();
             }elseif(!isset($searchBien)){
                 $list =  Auth::user()->clients()
                 ->select('email')
-                ->where('clients.user_id', '=', Auth::id())
+                ->where([
+                    ['clients.user_id', '=', Auth::id()],
+                    ['clients.email', '!=', 'null'],
+                ])
+                ->orderBy('date_contact', 'desc')
                 ->get()
                 ->toArray();
             }
@@ -365,8 +390,10 @@ class ClientController extends Controller
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.etat',"rlike", $searchEtat],
-                                ['clients.actif',"=", $searchActif]
-                            ])
+                                ['clients.actif',"=", $searchActif],
+                                ['clients.phone', '!=', 'null'],
+                            ])                         
+                            ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
                         }elseif(isset($searchActif)){
@@ -376,7 +403,9 @@ class ClientController extends Controller
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.actif',"=", $searchActif],
+                                ['clients.phone', '!=', 'null'],
                             ])
+                            ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
                         }
@@ -386,7 +415,9 @@ class ClientController extends Controller
                         ->where([
                             ['clients.user_id', '=', Auth::id()],
                             ['clients.type_de_bien',"rlike", $searchBien],
+                            ['clients.phone', '!=', 'null'],
                         ])
+                        ->orderBy('date_contact', 'desc')
                         ->get()
                         ->toArray();
                     }
@@ -401,8 +432,10 @@ class ClientController extends Controller
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.etat',"rlike", $searchEtat],
-                                ['clients.actif',"=", $searchActif]
+                                ['clients.actif',"=", $searchActif],
+                                ['clients.email', '!=', 'null'],
                             ])
+                            ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
                         }elseif(isset($searchActif)){
@@ -412,17 +445,21 @@ class ClientController extends Controller
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.actif',"=", $searchActif],
+                                ['clients.email', '!=', 'null'],
                             ])
+                            ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
                         }
                     }else{
                         $list = Auth::user()->clients()
-                        ->select('phone')
+                        ->select('email')
                         ->where([
                             ['clients.user_id', '=', Auth::id()],
                             ['clients.type_de_bien',"rlike", $searchBien],
-                        ])
+                            ['clients.email', '!=', 'null'],
+                        ])                        
+                        ->orderBy('date_contact', 'desc')
                         ->get()
                         ->toArray();
                     }

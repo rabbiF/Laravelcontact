@@ -160,7 +160,7 @@
                                 <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->firstname }}</span>
                                 </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
-                                    <span class="text-truncate text-break w-05-rem d-inline-block pl-0 pr-0">{{ $c->phone }}</span>
+                                    <span class="text-truncate text-break w-06-rem d-inline-block pl-0 pr-0">{{ $c->phone }}</span>
                                 </td>
                                 <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                                     <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->type_de_bien }}</span>

@@ -30,7 +30,7 @@ class HomeController extends Controller
             $user = DB::table('users')->select('users.*')->paginate(15);
             return view('admin.index')->with('user', $user);
         }else{
-            $clients = Auth::user()->clients()->get();
+            $clients = Auth::user()->clients()->orderBy('date_contact', 'desc')->get();
             return view('clients.index')->with('clients', $clients);
         }
     }
