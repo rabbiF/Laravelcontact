@@ -47,8 +47,8 @@
                                         </div>
 
                                         <div class="form-group mb-0 pl-0 col-md-3">
-                                            <select class="selectpicker" title="Actif" name="actif">
-                                                <?=$metrics->staticSelect('Actif', 'Oui')?>
+                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                                <?=$metrics->staticSelect('Actif', 'Oui,Non')?>
                                             </select>
                                         </div>
 
@@ -75,6 +75,7 @@
                                         $listparam = str_replace("bien", "", $listparam);
                                         $listparam = implode("bien", $listparam);
                                         $listparam = str_replace("&", "", $listparam);
+                                        $listparam = str_replace("bien", "|", $listparam);
 
                                         $listparam1 = $listparam2 = "";
                                       
@@ -85,6 +86,7 @@
                                             $listparam2 = str_replace("actif=", "", $listparam2);
                                             $listparam2 = implode("actif", $listparam2);
                                             $listparam2 = str_replace("&", "", $listparam2); 
+                                            $listparam2 = str_replace("actif", "|", $listparam2);
 
                                             $searchArray = ["actif="];
                                             $listparam = str_replace($searchArray, "", $listparam);
@@ -93,13 +95,17 @@
                                             $listparam1 = explode ( "etat=" , $listparam);
                                             unset($listparam1[0]);
                                             $listparam1 = array_values($listparam1); 
-                                            $listparam1 = str_replace("etat=", "", $listparam1);
+                                            $searchArray = ["Oui","Non","&","etat="];
+                                            $listparam1 = str_replace($searchArray, "", $listparam1);
                                             $listparam1 = implode("etat", $listparam1);
-                                            $listparam1 = str_replace("&", "", $listparam1);
+                                            $listparam1 = str_replace("etat", "|", $listparam1);
 
                                             $searchArray = ["etat="];
                                             $listparam = str_replace($searchArray, "", $listparam);
                                             $listparam = str_replace($listparam1, "", $listparam);
+
+                                            $searchArray = ["actif","Oui","Non","Neuf","Ancien"];
+                                            $listparam = str_replace($searchArray, "", $listparam);
                                         }else{
                                             $listparam1 = explode ( "etat=" , $listparam);
                                             unset($listparam1[0]);
@@ -107,25 +113,10 @@
                                             $listparam1 = str_replace("etat=", "", $listparam1);
                                             $listparam1 = implode("etat", $listparam1);
                                             $listparam1 = str_replace("&", "", $listparam1); 
+                                            $listparam1 = str_replace("etat", "|", $listparam1);
 
-                                            $searchArray = ["etat="];
+                                            $searchArray = ["etat=","Neuf","Ancien"];
                                             $listparam = str_replace($searchArray, "", $listparam);
-                                            $listparam = str_replace($listparam1, "", $listparam);
-                                            
-                                            $listparam2 = explode ("actif=" , $listparam1);
-                                            unset($listparam2[0]);
-                                            $listparam2 = array_values($listparam2); 
-                                            $listparam2 = str_replace("actif=", "", $listparam2);
-                                            $listparam2 = implode("actif", $listparam2);
-                                            $listparam2 = str_replace("&", "", $listparam2);
-                                            
-                                            $searchArray = ["actif="];
-                                            $listparam1 = str_replace($searchArray, "", $listparam1);
-                                            $listparam1 = str_replace($listparam2, "", $listparam1);
-
-                                            $searchArray = ["actif="];
-                                            $listparam = str_replace($searchArray, "", $listparam);
-                                            $listparam = str_replace($listparam2, "", $listparam);
                                         }
                                     }else{
                                         $listparam="";
@@ -133,7 +124,8 @@
                                     }
                                 ?>
                                 <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
-                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>                            </div>    
+                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
+                            </div>    
                         </div>
                     </div> 
                     <table id="customer_data" class="table table-bordered">

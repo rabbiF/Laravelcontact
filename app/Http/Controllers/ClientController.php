@@ -199,14 +199,75 @@ class ClientController extends Controller
             $searchEtat = $request->query('etat');
             $searchActif = $request->query('actif');
 
-            if(isset($searchEtat) && isset($searchActif)){ 
+            if($searchEtat != "" && $searchActif != ""){ 
                 $search = str_replace("etat=".$searchEtat, "", $search);
-                $search = str_replace("etat=Neuf", "", $search);
+                $search = str_replace("etat=Neuf", "", $search);                
+                $search = str_replace("actif=".$searchActif, "", $search);
 
-                $searchEtat= explode('etat=', $request->fullUrl());
+                $searchEtat= explode('=', $request->fullUrl());
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchEtat = str_replace("&", "", $searchEtat);
+                $searchArray = ["&",$search,"etat","bien"];
+                $searchEtat = str_replace($searchArray, "", $searchEtat);
+                $searchEtat = str_replace("%2F", "/", $searchEtat);
+                $searchEtat = implode("|", $searchEtat);
+
+                $searchActif= explode('=', $request->fullUrl());
+                unset($searchActif[0]);
+                $searchActif = array_values($searchActif);
+                $searchArray = ["&", "bien", "etat", "Ancien", "Neuf", "="];
+                $searchActif = str_replace($searchArray, "", $searchActif);
+                $searchActif = str_replace("%2F", "/", $searchActif);
+                $searchActif = implode("|", $searchActif);
+                $searchActif = str_replace($search, "", $searchActif);  
+
+                $result =  DB::table('clients')
+                ->join('users', function ($join) 
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.*')
+                ->where([
+                    ['clients.type_de_bien',"rlike", $search],
+                    ['clients.etat','rlike', $searchEtat],
+                    ['clients.actif','rlike', $searchActif],                    
+                ])
+                ->orderBy('date_contact', 'desc')
+                ->get();
+            }elseif($searchActif != ""){
+                $search = str_replace("actif=".$searchActif, "", $search);                
+
+                $searchActif= explode('=', $request->fullUrl());
+                unset($searchActif[0]);
+                $searchActif = array_values($searchActif);
+                $searchArray = ["&",$search,"actif","bien"];
+                $searchActif = str_replace($searchArray, "", $searchActif);
+                $searchActif = str_replace("%2F", "/", $searchActif);
+                $searchActif = implode("|", $searchActif);
+                $searchActif = str_replace($search, "", $searchActif);
+                
+                $result =  DB::table('clients')
+                ->join('users', function ($join) 
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.*')
+                ->where([                   
+                    ['clients.actif','rlike', $searchActif],
+                    ['clients.type_de_bien',"rlike", $search],
+                ])
+                ->orderBy('date_contact', 'desc')
+                ->get();
+            }elseif($searchEtat != ""){
+                $search = str_replace("etat=".$searchEtat, "", $search);
+
+                $searchEtat= explode('=', $request->fullUrl());
+                unset($searchEtat[0]);
+                $searchEtat = array_values($searchEtat);
+                $searchArray = ["&",$search,"etat","bien"];
+                $searchEtat = str_replace($searchArray, "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
 
@@ -219,24 +280,7 @@ class ClientController extends Controller
                 ->select('clients.*')
                 ->where([
                     ['clients.etat','rlike', $searchEtat],
-                    ['clients.actif','=', $searchActif],
                     ['clients.type_de_bien',"rlike", $search],
-                ])
-                ->orderBy('date_contact', 'desc')
-                ->get();
-            }elseif(isset($searchActif)){
-                $search = str_replace("actif=".$searchActif, "", $search);
-
-                $result =  DB::table('clients')
-                ->join('users', function ($join) 
-                {
-                    $join->on('clients.user_id', '=', 'users.id')
-                         ->where('users.id', '=', Auth::id());
-                })
-                ->select('clients.*')
-                ->where([
-                    ['clients.type_de_bien',"rlike", $search],
-                    ['clients.actif','=', $searchActif],
                 ])
                 ->orderBy('date_contact', 'desc')
                 ->get();
@@ -293,22 +337,22 @@ class ClientController extends Controller
         $searchActif = $request->query('actif');
 
         if(strpos($searchUrl, "tel_search")){
-            if(isset($searchTel)){
-                $list =  Auth::user()->clients()
-                ->select('phone')
-                ->where([
-                    ['clients.user_id', '=', Auth::id()],
-                    ['clients.phone', '!=', 'null'],
-                ])
-                ->orWhere([
-                    ['clients.phone', 'like', '%'.$searchTel.'%'],
-                    ['clients.email', 'like', '%'.$searchTel.'%'],
-                ])
+            if(isset($searchTel)){               
+                $list =  DB::table('clients')
+                ->join('users', function ($join)
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.phone')
+                ->where('clients.email', 'like', '%'.$searchTel.'%')
+                ->orWhere('clients.phone', 'like', '%'.$searchTel.'%')
+                ->orWhere('clients.type_de_bien', 'like', '%'.$searchTel.'%')
                 ->orWhere('clients.name', 'like', '%'.$searchTel.'%')
                 ->orWhere('clients.firstname', 'like', '%'.$searchTel.'%')
                 ->orderBy('date_contact', 'desc')
-                ->get()
-                ->toArray();
+                ->get();
+                $list = json_decode(json_encode($list), true);
             }elseif(!isset($searchBien)){
                 $list =  Auth::user()->clients()
                 ->select('phone')
@@ -325,21 +369,22 @@ class ClientController extends Controller
 
         if(strpos($searchUrl, "mail_search")){
             if(isset($searchMail)){
-                $list = Auth::user()->clients()
-                ->select('email')
-                ->where([
-                    ['clients.user_id', '=', Auth::id()],
-                    ['clients.email', '!=', 'null'],
-                ])
-                ->orWhere([
-                    ['clients.phone', 'like', '%'.$searchMail.'%'],
-                    ['clients.email', 'like', '%'.$searchMail.'%'],
-                ])
+                $list =  DB::table('clients')
+                ->join('users', function ($join)
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.email')
+                ->where('clients.email', 'like', '%'.$searchMail.'%')
+                ->orWhere('clients.phone', 'like', '%'.$searchMail.'%')
+                ->orWhere('clients.type_de_bien', 'like', '%'.$searchMail.'%')
                 ->orWhere('clients.name', 'like', '%'.$searchMail.'%')
                 ->orWhere('clients.firstname', 'like', '%'.$searchMail.'%')
                 ->orderBy('date_contact', 'desc')
-                ->get()
-                ->toArray();
+                ->get();
+                $list = json_decode(json_encode($list), true);
+
             }elseif(!isset($searchBien)){
                 $list =  Auth::user()->clients()
                 ->select('email')
@@ -355,17 +400,18 @@ class ClientController extends Controller
 
         if(empty($list)){
             if(isset($searchBien)){
-
                 # formatage Get bien
                 $searchBien = $searchUrl;
                 $searchBien = explode('bien', $searchBien);
                 unset($searchBien[0]);
                 $searchBien = array_values($searchBien);
-                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","Neuf","Ancien","etat","v","="];
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","Neuf","Ancien","etat","v","=","|"];
                 $replaceArray = [""];
                 $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
                 $searchBien = str_replace("%2F", "/", $searchBien);
+                $searchBien = str_replace("%7C", "|", $searchBien);               
                 $searchBien = implode("|", $searchBien);
+                $searchBien = substr($searchBien,0,-1);
                 
                 $searchBien = str_replace($searchEtat, "", $searchBien);
                 $searchBien = str_replace($searchActif, "", $searchBien);
@@ -374,35 +420,54 @@ class ClientController extends Controller
                 $searchEtat = explode('etat', $searchEtat);
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","="];
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","=","|"];
                 $replaceArray = [""];
                 $searchEtat = str_replace($searchArray, $replaceArray, $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
+                $searchEtat = str_replace("%7C", "|", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
+                $searchEtat = substr($searchEtat,0,-1);
+
+                $searchActif = explode('actif', $searchActif);
+                $searchActif= array_values($searchActif);
+                $searchActif = implode("|", $searchActif);
+                $searchActif = substr($searchActif,0,-1);
                 
                 # if clic btn export tel.
                 if(strpos($searchUrl, "tel_search")){
-                    if(isset($searchEtat) || isset($searchActif)){
-                        if(isset($searchEtat) && isset($searchActif)){
+                    if($searchEtat != "" || $searchActif != ""){
+                        if($searchEtat != "" && $searchActif != ""){
                             $list = Auth::user()->clients()
                             ->select('phone')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.etat',"rlike", $searchEtat],
-                                ['clients.actif',"=", $searchActif],
+                                ['clients.actif',"rlike", $searchActif],
                                 ['clients.phone', '!=', 'null'],
-                            ])                         
+                            ])
                             ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
-                        }elseif(isset($searchActif)){
+                        }elseif($searchActif != ""){
                             $list = Auth::user()->clients()
                             ->select('phone')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.actif',"=", $searchActif],
+                                ['clients.actif',"rlike", $searchActif],
+                                ['clients.phone', '!=', 'null'],
+                            ])
+                            ->orderBy('date_contact', 'desc')
+                            ->get()
+                            ->toArray();
+                        }elseif($searchEtat != ""){
+                            $list = Auth::user()->clients()
+                            ->select('phone')
+                            ->where([
+                                ['clients.user_id', '=', Auth::id()],
+                                ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.etat',"rlike", $searchEtat],
                                 ['clients.phone', '!=', 'null'],
                             ])
                             ->orderBy('date_contact', 'desc')
@@ -424,27 +489,40 @@ class ClientController extends Controller
                 }
                 # if clic btn export mail.
                 if(strpos($searchUrl, "mail_search")){
-                    if(isset($searchEtat) || isset($searchActif)){
-                        if(isset($searchEtat) && isset($searchActif)){
+                    if($searchEtat != "" || $searchActif != ""){
+                        if($searchEtat != "" && $searchActif != ""){
                             $list = Auth::user()->clients()
                             ->select('email')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
                                 ['clients.etat',"rlike", $searchEtat],
-                                ['clients.actif',"=", $searchActif],
+                                ['clients.actif',"rlike", $searchActif],
                                 ['clients.email', '!=', 'null'],
                             ])
                             ->orderBy('date_contact', 'desc')
                             ->get()
                             ->toArray();
-                        }elseif(isset($searchActif)){
+
+                        }elseif($searchActif != ""){
                             $list = Auth::user()->clients()
                             ->select('email')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
-                                ['clients.actif',"=", $searchActif],
+                                ['clients.actif',"rlike", $searchActif],
+                                ['clients.email', '!=', 'null'],
+                            ])
+                            ->orderBy('date_contact', 'desc')
+                            ->get()
+                            ->toArray();
+                        }elseif($searchEtat != ""){
+                            $list = Auth::user()->clients()
+                            ->select('email')
+                            ->where([
+                                ['clients.user_id', '=', Auth::id()],
+                                ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.etat',"rlike", $searchEtat],
                                 ['clients.email', '!=', 'null'],
                             ])
                             ->orderBy('date_contact', 'desc')
@@ -458,7 +536,7 @@ class ClientController extends Controller
                             ['clients.user_id', '=', Auth::id()],
                             ['clients.type_de_bien',"rlike", $searchBien],
                             ['clients.email', '!=', 'null'],
-                        ])                        
+                        ])
                         ->orderBy('date_contact', 'desc')
                         ->get()
                         ->toArray();

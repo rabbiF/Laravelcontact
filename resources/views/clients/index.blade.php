@@ -46,8 +46,8 @@
                                         </div>
 
                                         <div class="form-group mb-0 pl-0 col-md-3">
-                                            <select class="selectpicker" title="Actif" name="actif">
-                                                <?=$metrics->staticSelect('Actif', 'Oui')?>
+                                            <select class="selectpicker" multiple title="Actif" name="actif">
+                                                <?=$metrics->staticSelect('Actif', 'Oui,Non')?>
                                             </select>
                                         </div>
 
