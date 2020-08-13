@@ -199,27 +199,28 @@ class ClientController extends Controller
             $searchEtat = $request->query('etat');
             $searchActif = $request->query('actif');
 
-            if($searchEtat != "" && $searchActif != ""){ 
-                $search = str_replace("etat=".$searchEtat, "", $search);
-                $search = str_replace("etat=Neuf", "", $search);                
-                $search = str_replace("actif=".$searchActif, "", $search);
+            if($searchEtat != "" && $searchActif != ""){
+                $searchArray = ["actif=Oui","actif=Non","etat=Neuf","etat=Ancien"];
+                $search = str_replace($searchArray, "", $search);  
 
                 $searchEtat= explode('=', $request->fullUrl());
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&",$search,"etat","bien"];
+                $searchArray = ["&",$search,"etat","bien","actif","Non","Oui",$searchActif];
                 $searchEtat = str_replace($searchArray, "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
+                $searchEtat = substr_replace($searchEtat, '', 0, 3);
 
                 $searchActif= explode('=', $request->fullUrl());
                 unset($searchActif[0]);
                 $searchActif = array_values($searchActif);
-                $searchArray = ["&", "bien", "etat", "Ancien", "Neuf", "="];
+                $searchArray = ["&", "bien", "etat", "Ancien", "Neuf", "=","actif"];
                 $searchActif = str_replace($searchArray, "", $searchActif);
                 $searchActif = str_replace("%2F", "/", $searchActif);
                 $searchActif = implode("|", $searchActif);
                 $searchActif = str_replace($search, "", $searchActif);  
+                $searchActif = substr_replace($searchActif, '', -3, 3);
 
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
@@ -236,7 +237,8 @@ class ClientController extends Controller
                 ->orderBy('date_contact', 'desc')
                 ->get();
             }elseif($searchActif != ""){
-                $search = str_replace("actif=".$searchActif, "", $search);                
+                $searchArray = ["actif=Oui","actif=Non"];
+                $search = str_replace($searchArray, "", $search);                               
 
                 $searchActif= explode('=', $request->fullUrl());
                 unset($searchActif[0]);
@@ -246,7 +248,8 @@ class ClientController extends Controller
                 $searchActif = str_replace("%2F", "/", $searchActif);
                 $searchActif = implode("|", $searchActif);
                 $searchActif = str_replace($search, "", $searchActif);
-                
+                $searchActif = substr_replace($searchActif, '', -1, 1);
+
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
                 {
@@ -261,7 +264,8 @@ class ClientController extends Controller
                 ->orderBy('date_contact', 'desc')
                 ->get();
             }elseif($searchEtat != ""){
-                $search = str_replace("etat=".$searchEtat, "", $search);
+                $searchArray = ["etat=Neuf","etat=Ancien"];
+                $search = str_replace($searchArray, "", $search); 
 
                 $searchEtat= explode('=', $request->fullUrl());
                 unset($searchEtat[0]);
@@ -270,6 +274,8 @@ class ClientController extends Controller
                 $searchEtat = str_replace($searchArray, "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
+                $searchEtat = str_replace($search, "", $searchEtat);
+                $searchEtat = substr_replace($searchEtat, '', 0, 1);
 
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
