@@ -206,11 +206,16 @@ class ClientController extends Controller
                 $searchEtat= explode('=', $request->fullUrl());
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&",$search,"etat","bien","actif","Non","Oui",$searchActif];
+                $searchArray = ["&","etat","bien","actif","Non","Oui"];
                 $searchEtat = str_replace($searchArray, "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
                 $searchEtat = substr_replace($searchEtat, '', 0, 3);
+
+                $searchReplace = explode("|", $search);
+                $searchEtat =  str_replace($searchReplace, "", $searchEtat);
+                $searchArray = ["||", "|A"];
+                $searchEtat =  str_replace($searchArray, "", $searchEtat);                
 
                 $searchActif= explode('=', $request->fullUrl());
                 unset($searchActif[0]);
@@ -322,7 +327,7 @@ class ClientController extends Controller
                 ->get();
         }
 
-        return view('result', compact('search', 'result'));
+        return view('result', compact('search', 'result'));       
     }
 
     public function download(Request $request)
