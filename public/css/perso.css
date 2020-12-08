@@ -1,3 +1,9 @@
+.text-truncate {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+}
 #customer_data td[data-toggle="collapse"] {
     cursor: pointer;
 }
@@ -27,4 +33,9 @@
 }
 .w-03-rem {
     width: 03rem;
+}
+@media (min-width:1200px) {
+    .container {
+     max-width:1240px;
+    }
 }
