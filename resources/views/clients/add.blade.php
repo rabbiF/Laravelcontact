@@ -11,9 +11,14 @@
                 <form method="POST" action="{{ route('clients') }}">
                     @csrf
                     <div class="form-group row col-md-9 col-lg-10">
-                        <label for="date_contact" class="col-4 col-sm-5 col-md-6 col-lg-4 col-form-label px-0">Date de contact <span class="text-danger">*</span></label> 
+                        <label for="date_contact" class="col-4 col-sm-5 col-md-6 col-lg-4 col-form-label px-0">Date de contact <span class="text-danger">*</span></label>
                         <div class="col-6 col-sm-6 col-md-6">
-                            <input id="date_contact" type="date" name="date_contact" class="form-control">
+                            <div class="input-group">
+                                <input id="date_contact" type="text" name="date_contact" class="form-control" data-toggle="datepicker" required>
+                                <div class="input-group-append input-group-text">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -49,7 +54,9 @@
                             </select>
                         </div>
                         <div class="form-group col-md-12">
-                            <input id="secteur" placeholder="Secteur" type="text" class="form-control" name="secteur">
+                            <select class="mdb-select md-form form-control" id="secteur" name="secteur[]" multiple title="Secteur">
+                                <?=$metrics->staticSelect("Secteur") ?> 
+                            </select>
                         </div>  
                         <div class="form-group col-md-12">
                             <input id="options_secteur" placeholder="Option" type="text" class="form-control" name="options_secteur">

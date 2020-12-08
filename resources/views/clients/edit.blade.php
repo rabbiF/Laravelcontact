@@ -14,7 +14,16 @@
                         <div class="form-row">
                             <div class="form-group col-md-4 col-lg-3 col-xl-2">
                                 <label for="date_contact">Date de contact *</label>
-                                <input id="date_contact" value="{{ $client->date_contact }}" type="date" class="form-control" name="date_contact" required>
+                                <div class="input-group">
+                                    <?php
+                                        $format_us = $client->date_contact;
+                                        $format_fr = implode('/',array_reverse  (explode('-',$format_us)));
+                                    ?>
+                                    <input id="date_contact" value="<?=$format_fr?>" type="text" name="date_contact" class="form-control" data-toggle="datepicker" required>
+                                    <div class="input-group-append input-group-text">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group col-md-4 col-lg-3 col-xl-3">
                                 <label for="name">Nom *</label>
@@ -38,14 +47,14 @@
                             </div>
                             <div class="form-group col-md-4 col-lg-2">
                                 <label for="projet">Projet</label>
-                                <select class="mdb-select md-form form-control" id="projet" name="projet" title="Projet">                                                                     
+                                <select class="mdb-select md-form form-control" id="projet" name="projet" title="Projet">
                                     <?=($metrics->staticSelect("Projet", $client->projet)) ?>
                                 </select>
                             </div>
                             <div class="form-group col-md-5 col-lg-3">
                                 <label for="type">Type de Bien *</label>
                                 <select class="mdb-select md-form form-control" id="type_de_bien" name="type_de_bien[]" multiple title="Type de bien">
-                                    <?php echo ($metrics->staticBien($client->type_de_bien))['optionBien'] ?>
+                                    <?=($metrics->staticBien($client->type_de_bien))['optionBien'] ?>
                                 </select> 
                             </div>
                             <div class="form-group col-md-3">
@@ -56,14 +65,16 @@
                             </div>
                             <div class="form-group col-md-6 col-lg-5 col-xl-5">
                                 <label for="secteur">Secteur</label>
-                                <input id="secteur" value="{{ $client->secteur }}" type="text" class="form-control" name="secteur">                           
+                                <select multiple class="mdb-select md-form form-control" id="secteur" name="secteur[]" title="Secteur">
+                                    <?=$metrics->staticSelect("Secteur", $client->secteur) ?>
+                                </select>
                             </div>
                             <div class="form-group col-md-6 col-lg-4 col-xl-4">
                                 <label for="options_secteur">Option</label>
-                                <input id="options_secteur" value="{{ $client->options_secteur}}" type="text" class="form-control" name="options_secteur">                           
+                                <input id="options_secteur" value="{{ $client->options_secteur}}" type="text" class="form-control" name="options_secteur">
                             </div>
                             <div class="form-group col-md-5 col-lg-6 col-xl-5">
-                                <label for="options_color">Etiquettes</label>  
+                                <label for="options_color">Etiquettes</label>
                                 <div>
                                     <?=$metrics->staticOptionColor($client->options_color) ?>
                                 </div>
@@ -114,5 +125,11 @@
 @section('script')
 $(function () {
     $('select').selectpicker();
+    $('[data-toggle="datepicker"]').datepicker({
+        autoHide: true,
+        zIndex: 2048,
+        language: 'fr-FR',
+        format: 'dd/mm/yyyy'
+    }); 
 });
 @endsection

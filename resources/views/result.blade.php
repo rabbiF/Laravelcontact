@@ -33,7 +33,7 @@
 
                             <div class="collapse" id="collapseExample">
                                 <div class="card card-body">
-                                    <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
+                                <form action="{{ route('client.search') }}" method="get" class="form-inline pb-2">
                                         <div class="form-group mb-2 pl-0">
                                             <select class="selectpicker" multiple title="Bien..." name="bien" required>
                                                 <?=($metrics->staticBien())['optionBien'] ?>
@@ -42,17 +42,23 @@
 
                                         <div class="form-group mb-2  pl-0 pl-sm-2 col-sm-4 col-md-4">
                                             <select class="selectpicker" multiple title="Etat..." name="etat">
-                                                <?=$metrics->staticSelect('Etat', 'Neuf,Ancien')?>
+                                                <?=$metrics->staticSelect('Etat','Neuf,Ancien')?>
                                             </select>
                                         </div>
 
-                                        <div class="form-group mb-0 pl-0 col-md-3">
+                                        <div class="form-group mb-2 pl-0">
+                                            <select class="selectpicker" multiple title="Secteur..." name="secteur" required>
+                                                <?=($metrics->staticSelect('Secteur'))?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-2 pl-0 pl-sm-2 col-md-3">
                                             <select class="selectpicker" multiple title="Actif" name="actif">
                                                 <?=$metrics->staticSelect('Actif', 'Oui,Non')?>
                                             </select>
-                                        </div>
+                                        </div>                                        
 
-                                        <div class="form-group mb-0 pt-2 pt-md-0">
+                                        <div class="form-group mb-2 pt-2 pt-md-0">
                                             <button class="btn btn-success" type="submit">
                                                 Appliquer
                                             </button>
@@ -67,8 +73,8 @@
                             <div>
                             <?php
                                     $tabUrl = parse_url ( $_SERVER [ 'REQUEST_URI' ] ) ;
-                                    $listparam = explode ( "bien=" , $tabUrl [ 'query' ] ) ;
-                                     
+                                    $listparam = explode ( "bien=" , $tabUrl [ 'query' ] ) ;                                    
+
                                     if(isset($listparam)){
                                         unset($listparam[0]);
                                         $listparam = array_values($listparam);
@@ -77,16 +83,26 @@
                                         $listparam = str_replace("&", "", $listparam);
                                         $listparam = str_replace("bien", "|", $listparam);
 
-                                        $listparam1 = $listparam2 = "";
+                                        $listparam1 = $listparam2 = $listparam3 = "";
                                       
-                                        if(strpos($listparam,"actif=")){
+                                        if(strpos($listparam,"actif=")){                                            
+                                            $listparam3 = explode ("secteur=" , $listparam);
+                                            unset($listparam3[0]);
+                                            $listparam3 = array_values($listparam3); 
+                                            $listparam3 = str_replace("secteur=", "", $listparam3);
+                                            $listparam3 = implode("secteur", $listparam3);
+                                            $listparam3 = str_replace("&", "", $listparam3); 
+                                            $listparam3 = str_replace("secteur", "|", $listparam3);
+                                            $searchArray = ["Oui","Non","&","etat=","actif="];
+                                            $listparam3 = str_replace($searchArray, "", $listparam3);
+
                                             $listparam2 = explode ( "actif=" , $listparam);
                                             unset($listparam2[0]);
                                             $listparam2 = array_values($listparam2); 
                                             $listparam2 = str_replace("actif=", "", $listparam2);
                                             $listparam2 = implode("actif", $listparam2);
                                             $listparam2 = str_replace("&", "", $listparam2); 
-                                            $listparam2 = str_replace("actif", "|", $listparam2);
+                                            $listparam2 = str_replace("actif", "|", $listparam2);                                           
 
                                             $searchArray = ["actif="];
                                             $listparam = str_replace($searchArray, "", $listparam);
@@ -99,6 +115,10 @@
                                             $listparam1 = str_replace($searchArray, "", $listparam1);
                                             $listparam1 = implode("etat", $listparam1);
                                             $listparam1 = str_replace("etat", "|", $listparam1);
+                                            $listparam1 = str_replace("secteur=", "|", $listparam1);
+                                            $listparam1 = str_replace($listparam3, "", $listparam1);
+                                            $pos = strrpos($listparam1, '|');
+                                            $listparam1 = substr_replace($listparam1, '', -1, $pos);
 
                                             $searchArray = ["etat="];
                                             $listparam = str_replace($searchArray, "", $listparam);
@@ -106,7 +126,23 @@
 
                                             $searchArray = ["actif","Oui","Non","Neuf","Ancien"];
                                             $listparam = str_replace($searchArray, "", $listparam);
+
+                                            $searchArray = ["secteur="];
+                                            $listparam = str_replace($searchArray, "|", $listparam);
+                                            $listparam = str_replace($listparam3, "", $listparam);
+                                            $pos = strrpos($listparam, '|');
+                                            $listparam = substr_replace($listparam, '', -1, $pos);
                                         }else{
+                                            $listparam3 = explode ("secteur=" , $listparam);
+                                            unset($listparam3[0]);
+                                            $listparam3 = array_values($listparam3); 
+                                            $listparam3 = str_replace("secteur=", "", $listparam3);
+                                            $listparam3 = implode("secteur", $listparam3);
+                                            $listparam3 = str_replace("&", "", $listparam3); 
+                                            $listparam3 = str_replace("secteur", "|", $listparam3);                                            
+                                            $searchArray = ["Oui","Non","&","etat=","actif="];
+                                            $listparam3 = str_replace($searchArray, "", $listparam3);                                            
+
                                             $listparam1 = explode ( "etat=" , $listparam);
                                             unset($listparam1[0]);
                                             $listparam1 = array_values($listparam1); 
@@ -114,17 +150,24 @@
                                             $listparam1 = implode("etat", $listparam1);
                                             $listparam1 = str_replace("&", "", $listparam1); 
                                             $listparam1 = str_replace("etat", "|", $listparam1);
+                                            $listparam1 = str_replace("secteur=", "|", $listparam1);
+                                            $listparam1 = str_replace($listparam3, "", $listparam1);
+                                            $pos = strrpos($listparam1, '|');
+                                            $listparam1 = substr_replace($listparam1, '', -1, $pos);
 
                                             $searchArray = ["etat=","Neuf","Ancien"];
                                             $listparam = str_replace($searchArray, "", $listparam);
+                                            $listparam = str_replace("secteur=", "|", $listparam);
+                                            $listparam = str_replace($listparam3, "", $listparam);
+                                            $pos = strrpos($listparam, '|');
+                                            $listparam = substr_replace($listparam, '', -1, $pos);
                                         }
                                     }else{
-                                        $listparam="";
-                                        $listparam1="";
-                                    }
+                                        $listparam = $listparam1 = $listparam2 = $listparam3 = "";
+                                    }                                   
                                 ?>
-                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
-                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
+                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&secteur='.$listparam3.'&tel_search='.request('q')) }}" class="btn btn-success">Export Télephones</a></span>
+                                <span><a href="{{ route('client.download', 'bien='.$listparam.'&etat='.$listparam1.'&actif='.$listparam2.'&secteur='.$listparam3.'&mail_search='.request('q')) }}" class="btn btn-success">Export Emails</a></span>
                             </div>    
                         </div>
                     </div> 
@@ -134,7 +177,8 @@
                         <th>Prénom</th>
                         <th>Tél.</th>
                         <th>Bien</th>
-                        <th>Option</th>
+                        <th>Secteur</th>
+                        <th>Option</th>                        
                         <th>Etat</th>
                         <th>Actif</th>
                             <th colspan="3" class="text-center">Actions</th>
@@ -159,6 +203,9 @@
                                     <div class="mt-2">
                                         <?=($metrics->staticBien($c->type_de_bien))['optionColor'] ?>
                                     </div>
+                                </td>
+                                <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                                    <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->secteur }}</span>
                                 </td>
                                 <td class="bg-{{$c->options_color}} <?=$color ?>" data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                                     <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->options_secteur }}</span>

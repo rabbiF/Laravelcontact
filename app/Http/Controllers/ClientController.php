@@ -62,8 +62,16 @@ class ClientController extends Controller
             $etat = $request->input('etat');
         }
 
+        if(is_array($request->input('secteur'))) {
+            $secteur = $request->input('secteur');
+            $secteur = implode(',', $secteur);  
+        }else{
+            $secteur = $request->input('secteur');
+        }
+
+        $date = $request->date_contact;
         $client = Auth::user()->clients()->create([
-            'date_contact' =>  $request->date_contact,
+            'date_contact' =>  implode('-',array_reverse  (explode('/',$date))),
             'name' => $request->name,
             'firstname' => $request->firstname,
             'email' => $request->email,
@@ -72,7 +80,7 @@ class ClientController extends Controller
             'projet' => $request->projet,
             'type_de_bien' => $news,
             'etat'=> $etat,
-            'secteur' => $request->secteur,
+            'secteur' => $secteur,
             'commentaires' => $request->commentaires,
             'contact' => $request->contact,
             'suivi' => $request->suivi,
@@ -122,6 +130,7 @@ class ClientController extends Controller
      * @param  \App\Model\Client  $client
      * @return \Illuminate\Http\Response
      */
+    
     public function update(Request $request, Client $client)
     {    
         $this->validate($request, [
@@ -143,8 +152,16 @@ class ClientController extends Controller
             $etat = $request->input('etat');
         }
 
+        if(is_array($request->input('secteur'))) {
+            $secteur = $request->input('secteur');
+            $secteur = implode(',', $secteur);  
+        }else{
+            $secteur = $request->input('secteur');
+        }
+        $date = $request->date_contact;
+        
         $client->update([
-            'date_contact' =>  $request->date_contact,
+            'date_contact' =>  implode('-',array_reverse  (explode('/',$date))),
             'name' => $request->name,
             'firstname' => $request->firstname,
             'email' => $request->email,
@@ -153,7 +170,7 @@ class ClientController extends Controller
             'projet' => $request->projet,
             'type_de_bien' => $news,
             'etat'=> $etat,
-            'secteur' => $request->secteur,
+            'secteur' => $secteur,
             'commentaires' => $request->commentaires,
             'contact' => $request->contact,
             'suivi' => $request->suivi,
@@ -198,35 +215,55 @@ class ClientController extends Controller
             
             $searchEtat = $request->query('etat');
             $searchActif = $request->query('actif');
+            $searchSecteur = $request->query('secteur');
 
-            if($searchEtat != "" && $searchActif != ""){
-                $searchArray = ["actif=Oui","actif=Non","etat=Neuf","etat=Ancien"];
-                $search = str_replace($searchArray, "", $search);  
-
-                $searchEtat= explode('=', $request->fullUrl());
+            if($searchEtat != "" && $searchActif != "" && $searchSecteur != ""){
+                $searchEtat = $request->fullUrl();
+                $searchEtat= explode('etat=', $searchEtat);
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&","etat","bien","actif","Non","Oui"];
-                $searchEtat = str_replace($searchArray, "", $searchEtat);
+                $searchEtat = str_replace("&", "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
-                $searchEtat = substr_replace($searchEtat, '', 0, 3);
 
-                $searchReplace = explode("|", $search);
-                $searchEtat =  str_replace($searchReplace, "", $searchEtat);
-                $searchArray = ["||", "|A"];
-                $searchEtat =  str_replace($searchArray, "", $searchEtat);                
-
-                $searchActif= explode('=', $request->fullUrl());
+                $searchActif = $request->fullUrl();
+                $searchActif= explode('actif=', $searchActif);
                 unset($searchActif[0]);
                 $searchActif = array_values($searchActif);
-                $searchArray = ["&", "bien", "etat", "Ancien", "Neuf", "=","actif"];
-                $searchActif = str_replace($searchArray, "", $searchActif);
+                $searchActif = str_replace("&", "", $searchActif);
                 $searchActif = str_replace("%2F", "/", $searchActif);
                 $searchActif = implode("|", $searchActif);
-                $searchActif = str_replace($search, "", $searchActif);  
-                $searchActif = substr_replace($searchActif, '', -3, 3);
 
+                $searchSecteur = $request->fullUrl();
+                $searchSecteur= explode('secteur=', $searchSecteur);
+                unset($searchSecteur[0]);
+                $searchSecteur = array_values($searchSecteur);
+                $searchSecteur = str_replace("&", "", $searchSecteur);
+                $searchSecteur = str_replace("%2F", "/", $searchSecteur);                
+                $searchSecteur = implode("|", $searchSecteur);
+
+                $searchEtat = str_replace("secteur=", "|", $searchEtat);
+                $searchEtat = str_replace($searchSecteur, "", $searchEtat);
+                $pos = strrpos($searchEtat, '|');
+                $searchEtat = substr_replace($searchEtat, '', -1, $pos);
+
+                $searchActif = str_replace("secteur=", "|", $searchActif);
+                $searchActif = str_replace($searchSecteur, "", $searchActif);
+                $searchActif = str_replace("etat=", "|", $searchActif);
+                $searchActif = str_replace($searchEtat, "", $searchActif);
+               
+                $searchArray = ["secteur=","etat="];
+                $search =  str_replace($searchArray, "|", $search);
+                $searchArray = [$searchActif, $searchEtat, $searchSecteur, "||"];
+                $search = str_replace($searchArray, "", $search);
+                
+                $searchActif = str_replace("bien=", "|", $searchActif);
+                $searchActif = str_replace($search, "", $searchActif);
+                $pos = strrpos($searchActif, '|');
+                $searchActif = substr_replace($searchActif, '', -1, $pos);
+                $searchActif = str_replace("||", "", $searchActif);
+
+                $searchSecteur = str_replace("%20", " ", $searchSecteur);
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
                 {
@@ -237,24 +274,51 @@ class ClientController extends Controller
                 ->where([
                     ['clients.type_de_bien',"rlike", $search],
                     ['clients.etat','rlike', $searchEtat],
-                    ['clients.actif','rlike', $searchActif],                    
+                    ['clients.actif','rlike', $searchActif],
+                    ['clients.secteur','rlike', $searchSecteur],
                 ])
                 ->orderBy('date_contact', 'desc')
                 ->get();
             }elseif($searchActif != ""){
-                $searchArray = ["actif=Oui","actif=Non"];
-                $search = str_replace($searchArray, "", $search);                               
-
-                $searchActif= explode('=', $request->fullUrl());
+                $searchActif = $request->fullUrl();
+                $searchActif= explode('actif=', $searchActif);
                 unset($searchActif[0]);
                 $searchActif = array_values($searchActif);
-                $searchArray = ["&",$search,"actif","bien"];
-                $searchActif = str_replace($searchArray, "", $searchActif);
+                $searchActif = str_replace("&", "", $searchActif);
                 $searchActif = str_replace("%2F", "/", $searchActif);
                 $searchActif = implode("|", $searchActif);
-                $searchActif = str_replace($search, "", $searchActif);
-                $searchActif = substr_replace($searchActif, '', -1, 1);
 
+                $searchSecteur = $request->fullUrl();
+                $searchSecteur= explode('secteur=', $searchSecteur);
+                unset($searchSecteur[0]);
+                $searchSecteur = array_values($searchSecteur);
+                $searchSecteur = str_replace("&", "", $searchSecteur);
+                $searchSecteur = str_replace("%2F", "/", $searchSecteur);                
+                $searchSecteur = implode("|", $searchSecteur);
+
+                $searchActif = str_replace("secteur=", "|", $searchActif);
+                $searchActif = str_replace($searchSecteur, "", $searchActif);
+                $searchActif = str_replace("etat=", "|", $searchActif);
+                $searchActif = str_replace($searchEtat, "", $searchActif);
+               
+                $searchArray = ["secteur=","etat="];
+                $search =  str_replace($searchArray, "|", $search);
+                $searchArray = [$searchActif, $searchEtat, $searchSecteur, "||"];
+                $search = str_replace($searchArray, "", $search);   
+                $pos = strrpos($search, '|');
+                $search = substr_replace($search, '', -1, $pos);
+                $search= str_replace("||", "", $search);  
+                
+                $searchActif = str_replace("bien=", "|", $searchActif);
+                $searchActif = str_replace($search, "", $searchActif);
+                $pos = strrpos($searchActif, '|');
+                $searchActif = substr_replace($searchActif, '', -1, $pos);
+                $searchActif = str_replace("||", "", $searchActif);
+                $pos = strrpos($searchActif, '|');
+                $searchActif = substr_replace($searchActif, '', -1, $pos);
+                $searchActif = str_replace("||", "", $searchActif);
+
+                $searchSecteur = str_replace("%20", " ", $searchSecteur);
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
                 {
@@ -262,26 +326,44 @@ class ClientController extends Controller
                          ->where('users.id', '=', Auth::id());
                 })
                 ->select('clients.*')
-                ->where([                   
+                ->where([
                     ['clients.actif','rlike', $searchActif],
                     ['clients.type_de_bien',"rlike", $search],
+                    ['clients.secteur',"rlike", $searchSecteur],
                 ])
                 ->orderBy('date_contact', 'desc')
                 ->get();
             }elseif($searchEtat != ""){
-                $searchArray = ["etat=Neuf","etat=Ancien"];
-                $search = str_replace($searchArray, "", $search); 
-
-                $searchEtat= explode('=', $request->fullUrl());
+                $searchEtat = $request->fullUrl();
+                $searchEtat= explode('etat=', $searchEtat);
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&",$search,"etat","bien"];
-                $searchEtat = str_replace($searchArray, "", $searchEtat);
+                $searchEtat = str_replace("&", "", $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
-                $searchEtat = str_replace($search, "", $searchEtat);
-                $searchEtat = substr_replace($searchEtat, '', 0, 1);
 
+                $searchSecteur = $request->fullUrl();
+                $searchSecteur= explode('secteur=', $searchSecteur);
+                unset($searchSecteur[0]);
+                $searchSecteur = array_values($searchSecteur);
+                $searchSecteur = str_replace("&", "", $searchSecteur);
+                $searchSecteur = str_replace("%2F", "/", $searchSecteur);                
+                $searchSecteur = implode("|", $searchSecteur);
+
+                $searchEtat = str_replace("secteur=", "|", $searchEtat);
+                $searchEtat = str_replace($searchSecteur, "", $searchEtat);
+                $pos = strrpos($searchEtat, '|');
+                $searchEtat = substr_replace($searchEtat, '', -1, $pos);
+
+                $searchArray = ["secteur=","etat="];
+                $search =  str_replace($searchArray, "|", $search);
+                $searchArray = [$searchActif, $searchEtat, $searchSecteur, "||"];
+                $search = str_replace($searchArray, "", $search);   
+                $pos = strrpos($search, '|');
+                $search = substr_replace($search, '', -1, $pos);
+                $search= str_replace("||", "", $search);
+
+                $searchSecteur = str_replace("%20", " ", $searchSecteur);
                 $result =  DB::table('clients')
                 ->join('users', function ($join) 
                 {
@@ -291,13 +373,43 @@ class ClientController extends Controller
                 ->select('clients.*')
                 ->where([
                     ['clients.etat','rlike', $searchEtat],
+                    ['clients.type_de_bien',"rlike", $search],
+                    ['clients.secteur',"rlike", $searchSecteur],
+                ])
+                ->orderBy('date_contact', 'desc')
+                ->get();
+            }elseif($searchSecteur != ""){
+
+                $searchSecteur = $request->fullUrl();
+                $searchSecteur= explode('secteur=', $searchSecteur);
+                unset($searchSecteur[0]);
+                $searchSecteur = array_values($searchSecteur);
+                $searchSecteur = str_replace("&", "", $searchSecteur);
+                $searchSecteur = str_replace("%2F", "/", $searchSecteur);                
+                $searchSecteur = implode("|", $searchSecteur);
+
+                $search =  str_replace("secteur=", "|", $search);
+                $search = str_replace($searchSecteur,"",$search);
+                $pos = strrpos($search, '|');
+                $search = substr_replace($search, '', -1, $pos);
+
+                $searchSecteur = str_replace("%20", " ", $searchSecteur);
+                $result =  DB::table('clients')
+                ->join('users', function ($join) 
+                {
+                    $join->on('clients.user_id', '=', 'users.id')
+                         ->where('users.id', '=', Auth::id());
+                })
+                ->select('clients.*')
+                ->where([
+                    ['clients.secteur','rlike', $searchSecteur],
                     ['clients.type_de_bien',"rlike", $search],
                 ])
                 ->orderBy('date_contact', 'desc')
                 ->get();
             }else{
                 $result =  DB::table('clients')
-                ->join('users', function ($join) 
+                ->join('users', function ($join)
                 {
                     $join->on('clients.user_id', '=', 'users.id')
                          ->where('users.id', '=', Auth::id());
@@ -327,7 +439,7 @@ class ClientController extends Controller
                 ->get();
         }
 
-        return view('result', compact('search', 'result'));       
+        return view('result', compact('search', 'result'));
     }
 
     public function download(Request $request)
@@ -346,6 +458,7 @@ class ClientController extends Controller
         $searchUrl =  $request->fullUrl();
         $searchEtat = $request->query('etat');
         $searchActif = $request->query('actif');
+        $searchSecteur = $request->query('secteur');
 
         if(strpos($searchUrl, "tel_search")){
             if(isset($searchTel)){               
@@ -375,7 +488,6 @@ class ClientController extends Controller
                 ->get()
                 ->toArray();
             }
-
         }
 
         if(strpos($searchUrl, "mail_search")){
@@ -416,56 +528,63 @@ class ClientController extends Controller
                 $searchBien = explode('bien', $searchBien);
                 unset($searchBien[0]);
                 $searchBien = array_values($searchBien);
-                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","Neuf","Ancien","etat","v","=","|"];
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","Neuf","Ancien","etat","=","|","secteur","&"];
                 $replaceArray = [""];
                 $searchBien = str_replace($searchArray, $replaceArray, $searchBien);
                 $searchBien = str_replace("%2F", "/", $searchBien);
-                $searchBien = str_replace("%7C", "|", $searchBien);               
+                $searchBien = str_replace("%7C", "|", $searchBien);
                 $searchBien = implode("|", $searchBien);
-                $searchBien = substr($searchBien,0,-1);
-                
                 $searchBien = str_replace($searchEtat, "", $searchBien);
                 $searchBien = str_replace($searchActif, "", $searchBien);
+                $searchBien = str_replace($searchSecteur, "", $searchBien);                
+                $searchBien2 = str_replace("%20", " ", $searchBien);
+                $searchBien = str_replace($searchSecteur, "", $searchBien2);
+                $pos = strpos($searchBien, '|');
+                $searchBien = substr_replace($searchBien, '', -1, $pos);                
 
                 $searchEtat = $searchUrl;
                 $searchEtat = explode('etat', $searchEtat);
                 unset($searchEtat[0]);
                 $searchEtat = array_values($searchEtat);
-                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","=","|"];
+                $searchArray = ["&tel_search=","&mail_search=","&etat","&actif","=","|","&secteur"];
                 $replaceArray = [""];
                 $searchEtat = str_replace($searchArray, $replaceArray, $searchEtat);
                 $searchEtat = str_replace("%2F", "/", $searchEtat);
                 $searchEtat = str_replace("%7C", "|", $searchEtat);
                 $searchEtat = implode("|", $searchEtat);
-                $searchEtat = substr($searchEtat,0,-1);
+                $searchEtat = str_replace($searchSecteur, "", $searchEtat);
+                $searchEtat2 = str_replace("%20", " ", $searchEtat);
+                $searchEtat = str_replace($searchSecteur, "", $searchEtat2);
 
                 $searchActif = explode('actif', $searchActif);
                 $searchActif= array_values($searchActif);
                 $searchActif = implode("|", $searchActif);
-                $searchActif = substr($searchActif,0,-1);
+                $searchActif = str_replace($searchSecteur, "", $searchActif);
                 
                 # if clic btn export tel.
-                if(strpos($searchUrl, "tel_search")){
-                    if($searchEtat != "" || $searchActif != ""){
-                        if($searchEtat != "" && $searchActif != ""){
+                if(strpos($searchUrl, "tel_search")){                    
+                    if($searchEtat != "" || $searchActif != ""){                        
+                        if($searchEtat != "" && $searchActif != ""){                           
                             $list = Auth::user()->clients()
                             ->select('phone')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.etat',"rlike", $searchEtat],
                                 ['clients.actif',"rlike", $searchActif],
                                 ['clients.phone', '!=', 'null'],
                             ])
                             ->orderBy('date_contact', 'desc')
                             ->get()
-                            ->toArray();
+                            ->toArray();                            
                         }elseif($searchActif != ""){
                             $list = Auth::user()->clients()
                             ->select('phone')
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.actif',"rlike", $searchActif],
                                 ['clients.phone', '!=', 'null'],
                             ])
@@ -478,6 +597,7 @@ class ClientController extends Controller
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.etat',"rlike", $searchEtat],
                                 ['clients.phone', '!=', 'null'],
                             ])
@@ -491,6 +611,7 @@ class ClientController extends Controller
                         ->where([
                             ['clients.user_id', '=', Auth::id()],
                             ['clients.type_de_bien',"rlike", $searchBien],
+                            ['clients.secteur',"rlike", $searchSecteur],
                             ['clients.phone', '!=', 'null'],
                         ])
                         ->orderBy('date_contact', 'desc')
@@ -507,6 +628,7 @@ class ClientController extends Controller
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.etat',"rlike", $searchEtat],
                                 ['clients.actif',"rlike", $searchActif],
                                 ['clients.email', '!=', 'null'],
@@ -521,6 +643,7 @@ class ClientController extends Controller
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.actif',"rlike", $searchActif],
                                 ['clients.email', '!=', 'null'],
                             ])
@@ -533,6 +656,7 @@ class ClientController extends Controller
                             ->where([
                                 ['clients.user_id', '=', Auth::id()],
                                 ['clients.type_de_bien',"rlike", $searchBien],
+                                ['clients.secteur',"rlike", $searchSecteur],
                                 ['clients.etat',"rlike", $searchEtat],
                                 ['clients.email', '!=', 'null'],
                             ])
@@ -546,6 +670,7 @@ class ClientController extends Controller
                         ->where([
                             ['clients.user_id', '=', Auth::id()],
                             ['clients.type_de_bien',"rlike", $searchBien],
+                            ['clients.secteur',"rlike", $searchSecteur],
                             ['clients.email', '!=', 'null'],
                         ])
                         ->orderBy('date_contact', 'desc')
@@ -569,30 +694,34 @@ class ClientController extends Controller
         };
 
         return Response::stream($callback, 200, $headers);
+       
     }
 
     public static function staticBien($selected = null){
-        $optionArray = ["T1","T2","T3","T4","T5","T6","T7","Villas/Maison","Locaux/Bureaux","Terrain","Garage","NC"];
+        $file = parse_ini_file("abricorse.ini");
+        $optionArray = explode(",",$file["Biens"]);
         $optionArrayColor = ["primary","secondary","success","danger","warning","info","pink","dark","darkred","purple","yellow","coral"];
         $optionBien = $optionColor = "";
 
-        if(isset($selected)){ 
-            $selected = explode(",", $selected);
-
-            foreach($optionArray as $key => $opt) {
-                if(in_array($opt, $selected)) {
-                    $optionBien .= "<option value='".$opt."' selected>".$opt."</option>";
-                    $optionColor .= "<span class='p-2 pb-0 pt-0 mt-1 mr-1 bg-".$optionArrayColor[$key]." text-white col-2 h-25 d-inline-block border rounded' style='width: 30px;'></span>";                     
-                }else{
+        if($file){
+            if(isset($selected)){ 
+                $selected = explode(",", $selected);
+    
+                foreach($optionArray as $key => $opt) {
+                    if(in_array($opt, $selected)) {
+                        $optionBien .= "<option value='".$opt."' selected>".$opt."</option>";
+                        $optionColor .= "<span class='p-2 pb-0 pt-0 mt-1 mr-1 bg-".$optionArrayColor[$key]." text-white col-2 h-25 d-inline-block border rounded' style='width: 30px;'></span>";                     
+                    }else{
+                        $optionBien .= "<option value='".$opt."'>".$opt."</option>";
+                    }
+                }
+    
+            }else{
+                foreach($optionArray as $opt) {
                     $optionBien .= "<option value='".$opt."'>".$opt."</option>";
                 }
             }
-
-        }else{
-            foreach($optionArray as $opt) {
-                $optionBien .= "<option value='".$opt."'>".$opt."</option>";
-            }
-        }
+        }        
         $return = array(
             "optionBien" => $optionBien,
             "optionColor" => $optionColor
@@ -635,41 +764,47 @@ class ClientController extends Controller
     public static function staticSelect($type, $selected = null){
         $option = "";
         $optionArray = [];
+        $file = parse_ini_file("abricorse.ini");
 
-        switch ($type){
-            case "Actif":
-                $optionArray = ["Oui","Non"];
-                break;
-            case "Suivi":
-                $optionArray = ["A rappeler","A relancer","Contrat/compromis signé","Acte signé"];
-                break;            
-            case "Contact":
-                $optionArray = ["Tel","Sms","Mail","Direct"];
-                break;
-            case "Etat":
-                $optionArray = ["Neuf","Ancien"];
-                break;
-            case "Projet":
-                $optionArray = ["Location","Achat/Vente","Investissement"];
-                break;
-        }
-
-        if(isset($selected)){
-            $selected = explode(",", $selected);
-
-            foreach($optionArray as $key => $opt) {
-                if(in_array($opt, $selected)) {
-                    $option.= "<option value='".$opt."' selected>".$opt."</option>";
-                }else{
-                    $option.= "<option value='".$opt."'>".$opt."</option>";
+        if($file){
+            switch ($type){
+                case "Actif":
+                    $optionArray = explode(",",$file["Actif"]);
+                    break;
+                case "Suivi":
+                    $optionArray = explode(",",$file["Suivi"]);
+                    break;
+                case "Contact":
+                    $optionArray = explode(",",$file["Contact"]);
+                    break;
+                case "Etat":
+                    $optionArray = explode(",",$file["Etat"]);
+                    break;
+                case "Projet":
+                    $optionArray = explode(",",$file["Projet"]);
+                    break;
+                case "Secteur":
+                    $optionArray = explode(",",$file["Secteur"]);
+                    break;
+            }
+    
+            if(isset($selected)){
+                $selected = explode(",", $selected);
+    
+                foreach($optionArray as $key => $opt) {
+                    if(in_array($opt, $selected)) {
+                        $option.= "<option value='".$opt."' selected>".$opt."</option>";
+                    }else{
+                        $option.= "<option value='".$opt."'>".$opt."</option>";
+                    }
+                }
+    
+            }else{
+                foreach($optionArray as $opt) {
+                    $option .= "<option value='".$opt."'>".$opt."</option>";
                 }
             }
-
-        }else{
-            foreach($optionArray as $opt) {
-                $option .= "<option value='".$opt."'>".$opt."</option>";
-            }
-        }
+        }       
         
         return $option;
     }

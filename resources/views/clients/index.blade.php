@@ -45,13 +45,19 @@
                                             </select>
                                         </div>
 
-                                        <div class="form-group mb-0 pl-0 col-md-3">
+                                        <div class="form-group mb-2 pl-0">
+                                            <select class="selectpicker" multiple title="Secteur..." name="secteur" required>
+                                                <?=($metrics->staticSelect('Secteur'))?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-2 pl-0 pl-sm-2 col-md-3">
                                             <select class="selectpicker" multiple title="Actif" name="actif">
                                                 <?=$metrics->staticSelect('Actif', 'Oui,Non')?>
                                             </select>
                                         </div>
 
-                                        <div class="form-group mb-0 pt-2 pt-md-0">
+                                        <div class="form-group mb-2 pt-2 pt-md-0">
                                             <button class="btn btn-success" type="submit">
                                                 Appliquer
                                             </button>
@@ -69,7 +75,7 @@
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addClient" data-whatever="@getbootstrap">
                                     Nouveau
                                 </button>
-                            </div>    
+                            </div>
                         </div>
                     </div>
                     @include('clients.table')
@@ -84,6 +90,12 @@
 @section('script')
 $(function () {
     $('select').selectpicker();
+    $('[data-toggle="datepicker"]').datepicker({
+        autoHide: true,
+        zIndex: 2048,
+        language: 'fr-FR',
+        format: 'dd/mm/yyyy'
+    });    
     $('a#supprimer').confirm({
         title: 'Confirmation',
         content: 'Voulez-vous vraiment supprimer?', 

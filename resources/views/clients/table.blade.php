@@ -4,6 +4,7 @@
         <th>Prénom</th>
         <th>Tél.</th>
         <th>Bien</th>
+        <th>Secteur</th>
         <th>Option</th>
         <th>Etat</th>
         <th>Actif</th>
@@ -29,6 +30,9 @@
                 <div class="mt-2">
                     <?=($metrics->staticBien($c->type_de_bien))['optionColor'] ?>
                 </div>
+            </td>
+            <td data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
+                <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->secteur }}</span>
             </td>
             <td class="bg-{{$c->options_color}} <?=$color ?>" data-toggle="collapse" data-target="#collapse{{ $c->id }}" aria-expanded="false" aria-controls="collapse{{ $c->id }}">
                 <span class="text-truncate text-break w-08-rem d-inline-block pl-0 pr-0">{{ $c->options_secteur }}</span>
@@ -62,7 +66,7 @@
                         <div class="form-group col-md-4">
                             <label for="email">Email</label>
                             <input id="email" value="{{ $c->email }}" disabled type="text" class="form-control" name="email">
-                        </div>                        
+                        </div>
                     </div>
 
                     <div class="form-group">
